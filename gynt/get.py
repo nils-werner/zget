@@ -41,8 +41,15 @@ def get(inargs=None):
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('filename')
-    parser.add_argument('output', nargs='?')
+    parser.add_argument(
+        'filename',
+        help="The filename to look for on the network"
+    )
+    parser.add_argument(
+        'output',
+        nargs='?',
+        help="The local filename to save to"
+    )
     args = parser.parse_args(inargs)
 
     filename = args.filename

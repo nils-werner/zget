@@ -42,7 +42,10 @@ def put(inargs=None):
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('input')
+    parser.add_argument(
+        'input',
+        help="The file to share on the network"
+    )
     args = parser.parse_args(inargs)
 
     filename = args.input
