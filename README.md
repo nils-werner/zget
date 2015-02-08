@@ -5,7 +5,7 @@ A simple peer to peer file transfer utility, for situations where you and your p
 
 Files and peers are recognized by the filename they want to transfer, not by their hostnames or IPs.
 
-Gynt uses the fact that the filename is known to both parties as a security feature: The sender only advertises the sha1 sum of the filename on the network. Since the receiver must also know the filename, it can look for the sha1 using zeroconf.
+Gynt uses the fact that the filename is known to both parties as a security feature (*): The sender only advertises the sha1 sum of the filename on the network. Since the receiver must also know the filename, it can look for the sha1 using zeroconf.
 
 If a match was found, a simple HTTP request is made: For transferring the file the actual filename is then requested from the sender. If this filename wasn't correct, the process is aborted.
 
@@ -55,3 +55,5 @@ Marcy then does
     $ pynt annual_reports.xlsx
 
 Boom. Done.
+
+(*) Although I say "security feature" you should be aware that the filename and your data are sent in plaintext over the network. So do not use this tool for sensible data (unless you're PGP-encrypting it first).
