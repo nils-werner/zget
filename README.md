@@ -52,6 +52,6 @@ then shout
 
 Marcy then does
 
-    $ pynt my_holiday_pictures.zip
+    $ pynt annual_reports.xlsx
 
 Boom. Done.
