@@ -1,0 +1,14 @@
+image: drone/scipy:2.7-pip
+script:
+    - pip install -e .
+    - python setup.py egg_info -bdev sdist --formats gztar
+
+
+notify:
+    email:
+        on_failure: blame
+
+deploy:
+    bash:
+        script:
+            - scp -o StrictHostKeyChecking=no -P 22 -r dist/* $SERVER/pypi/
