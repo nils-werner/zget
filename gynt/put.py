@@ -49,11 +49,12 @@ def put(inargs=None):
     filehash = hashlib.sha1(filename).hexdigest()
 
     ip = socket.gethostbyname(socket.gethostname())
-    server = HTTPServer(('', 8080), FileHandler)
+    server = HTTPServer(('', 0), FileHandler)
+    port = server.server_port
 
     info = ServiceInfo("_gynt._http._tcp.local.",
                        filehash + "._gynt._http._tcp.local.",
-                       socket.inet_aton(ip), 8080, 0, 0,
+                       socket.inet_aton(ip), port, 0, 0,
                        {'path': None})
 
     zeroconf = Zeroconf()
