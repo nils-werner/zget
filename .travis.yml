@@ -7,4 +7,6 @@ install:
     - pip install -e .[tests]
 script:
     - py.test
+    - pynt LICENSE &
+    - gynt LICENSE tmp
     - python setup.py egg_info -bdev sdist --formats gztar
