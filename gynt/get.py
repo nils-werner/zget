@@ -4,7 +4,10 @@ from __future__ import absolute_import, division, print_function, \
 import sys
 import time
 import socket
-import urllib
+try:
+    import urllib.request as urllib
+except ImportError:
+    import urllib
 import hashlib
 import argparse
 
@@ -43,7 +46,7 @@ def get(inargs=None):
     args = parser.parse_args(inargs)
 
     filename = args.filename
-    filehash = hashlib.sha1(filename).hexdigest()
+    filehash = hashlib.sha1(filename.encode('utf-8')).hexdigest()
     downloaded = False
     if args.output is not None:
         output = args.output

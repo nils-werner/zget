@@ -46,7 +46,7 @@ def put(inargs=None):
     args = parser.parse_args(inargs)
 
     filename = args.input
-    filehash = hashlib.sha1(filename).hexdigest()
+    filehash = hashlib.sha1(filename.encode('utf-8')).hexdigest()
 
     ip = socket.gethostbyname(socket.gethostname())
     server = HTTPServer(('', 0), FileHandler)
