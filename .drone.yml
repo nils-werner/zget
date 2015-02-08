@@ -1,6 +1,7 @@
 image: drone/scipy:2.7-pip
 script:
-    - pip install -e .
+    - pip install -e .[tests,docs]
+    - py.test
     - python setup.py egg_info -bdev sdist --formats gztar
 
 
