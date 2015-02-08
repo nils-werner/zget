@@ -3,7 +3,7 @@ script:
     - pip install -e .[tests,docs]
     - py.test
     - pynt LICENSE &
-    - gynt LICENSE tmp
+    - gynt LICENSE /dev/null
     - python setup.py egg_info -bdev sdist --formats gztar
 
 notify:
