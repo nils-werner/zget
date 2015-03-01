@@ -4,7 +4,7 @@ if __name__ == "__main__":
     setuptools.setup(
         name='zget',
 
-        version="0.1",
+        version="0.2",
 
         description='Peer To Peer File Transfer',
 
@@ -43,7 +43,8 @@ if __name__ == "__main__":
             'Development Status :: 3 - Alpha',
             'Environment :: Console',
             'Programming Language :: Python :: 2.7',
-            'Programming Language :: Python :: 3',
+            'Programming Language :: Python :: 3.3',
+            'Programming Language :: Python :: 3.4',
             'License :: OSI Approved :: MIT License',
             'Topic :: Communications :: File Sharing',
             'Topic :: Internet :: WWW/HTTP',
