@@ -6,7 +6,7 @@ if __name__ == "__main__":
 
         version="0.2",
 
-        description='Peer To Peer File Transfer',
+        description='Zeroconf based peer to peer file transfer',
 
         author='Nils Werner',
         author_email='nils.werner@gmail.com',
