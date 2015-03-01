@@ -61,4 +61,4 @@ Marcy then does
 
 Boom. Done.
 
-(*) Although I say "security feature" you should be aware that the filename and your data are sent in plaintext over the network. So do not use this tool for sensible data (unless you're encrypting it first).
+(*) Although I say "security feature" you should be aware that the filename and your data are sent in plaintext over the network. So do not use this tool for sensitive data (unless you're encrypting it first).
