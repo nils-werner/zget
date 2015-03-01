@@ -2,7 +2,7 @@ import setuptools
 
 if __name__ == "__main__":
     setuptools.setup(
-        name='gynt',
+        name='zget',
 
         version="0.1",
 
@@ -51,7 +51,7 @@ if __name__ == "__main__":
         ],
 
         entry_points={'console_scripts': [
-            'gynt=gynt.get:get',
-            'pynt=gynt.put:put'
+            'zget=zget.get:get',
+            'zput=zget.put:put'
         ]},
     )

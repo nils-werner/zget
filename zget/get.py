@@ -25,7 +25,7 @@ class ServiceListener(object):
 
     def add_service(self, zeroconf, type, name):
         global downloaded, filename, filehash, output
-        if name == filehash + "._gynt._http._tcp.local.":
+        if name == filehash + "._zget._http._tcp.local.":
             print("Peer found. Downloading...")
             info = zeroconf.get_service_info(type, name)
             if info:
@@ -62,7 +62,7 @@ def get(inargs=None):
 
     zeroconf = Zeroconf()
     listener = ServiceListener()
-    browser = ServiceBrowser(zeroconf, "_gynt._http._tcp.local.", listener)
+    browser = ServiceBrowser(zeroconf, "_zget._http._tcp.local.", listener)
 
     while not downloaded:
         time.sleep(0.5)

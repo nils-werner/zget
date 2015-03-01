@@ -55,8 +55,8 @@ def put(inargs=None):
     server = HTTPServer(('', 0), FileHandler)
     port = server.server_port
 
-    info = ServiceInfo("_gynt._http._tcp.local.",
-                       filehash + "._gynt._http._tcp.local.",
+    info = ServiceInfo("_zget._http._tcp.local.",
+                       filehash + "._zget._http._tcp.local.",
                        socket.inet_aton(ip), port, 0, 0,
                        {'path': None})
 
