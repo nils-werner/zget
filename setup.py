@@ -10,6 +10,7 @@ if __name__ == "__main__":
 
         author='Nils Werner',
         author_email='nils.werner@gmail.com',
+        url='https://github.com/nils-werner/zget',
 
         license='MIT',
 
