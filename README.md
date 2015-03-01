@@ -14,6 +14,8 @@ zget uses the fact that the filename is known to both parties as a basic authent
 
 If a match was found, a simple HTTP request is made: For transferring the file the actual filename is then requested from the sender. If this filename wasn't correct, the process is aborted.
 
+The only third party dependency is [zeroconf](https://pypi.python.org/pypi/zeroconf), a platform independent pure-Python Zeroconf implementation.
+
 Installation
 ------------
 
