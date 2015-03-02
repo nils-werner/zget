@@ -7,6 +7,21 @@ if __name__ == "__main__":
         version="0.2",
 
         description='Zeroconf based peer to peer file transfer',
+        long_description="""Simply transfer a file using
+
+.. code:: bash
+
+    $ zput file.zip
+
+on the sender and
+
+.. code:: bash
+
+    $ zget file.zip
+
+on the receiver.
+
+Done.""",
 
         author='Nils Werner',
         author_email='nils.werner@gmail.com',
