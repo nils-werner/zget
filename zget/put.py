@@ -4,7 +4,10 @@ from __future__ import absolute_import, division, print_function, \
 import os
 import sys
 import socket
-import urllib
+try:
+    import urllib.request as urllib
+except ImportError:
+    import urllib
 import hashlib
 import argparse
 
