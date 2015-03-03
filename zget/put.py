@@ -4,6 +4,7 @@ from __future__ import absolute_import, division, print_function, \
 import os
 import sys
 import socket
+import urllib
 import hashlib
 import argparse
 
@@ -21,7 +22,7 @@ filehash = ""
 class FileHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         global filename, filehash
-        if self.path == os.path.join('/', filename):
+        if self.path == urllib.pathname2url(os.path.join('/', filename)):
             print("Peer found. Uploading...")
             with open(os.path.join(os.curdir, filename), 'rb') as fh:
                 self.send_response(200)
