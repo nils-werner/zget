@@ -19,13 +19,14 @@ except ImportError:
 
 
 filename = ""
+basename = ""
 filehash = ""
 
 
 class FileHandler(BaseHTTPRequestHandler):
     def do_GET(self):
-        global filename, filehash
-        if self.path == urllib.pathname2url(os.path.join('/', filename)):
+        global filename, basename, filehash
+        if self.path == urllib.pathname2url(os.path.join('/', basename)):
             print("Peer found. Uploading...")
             with open(os.path.join(os.curdir, filename), 'rb') as fh:
                 self.send_response(200)
@@ -42,7 +43,7 @@ class FileHandler(BaseHTTPRequestHandler):
 
 
 def put(inargs=None):
-    global filename, filehash
+    global filename, basename, filehash
 
     parser = argparse.ArgumentParser()
 
@@ -53,7 +54,8 @@ def put(inargs=None):
     args = parser.parse_args(inargs)
 
     filename = args.input
-    filehash = hashlib.sha1(filename.encode('utf-8')).hexdigest()
+    basename = os.path.basename(filename)
+    filehash = hashlib.sha1(basename.encode('utf-8')).hexdigest()
 
     ip = socket.gethostbyname(socket.gethostname())
     server = HTTPServer(('', 0), FileHandler)
