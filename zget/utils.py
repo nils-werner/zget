@@ -6,7 +6,7 @@ except ImportError:
 
 
 def config():
-    config = ConfigParser.SafeConfigParser(
+    config = configparser.SafeConfigParser(
         defaults={
             'port': '0',
         },
