@@ -48,17 +48,25 @@ def put(inargs=None):
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
+        '--port', '-p',
+        type=int, nargs='?', default=0,
+        help="The port to share the file on."
+    )
+    parser.add_argument(
         'input',
         help="The file to share on the network"
     )
     args = parser.parse_args(inargs)
+
+    if not 0 <= args.port <= 65535:
+        raise ValueError("Port %d exceeds allowed range" % args.port)
 
     filename = args.input
     basename = os.path.basename(filename)
     filehash = hashlib.sha1(basename.encode('utf-8')).hexdigest()
 
     ip = socket.gethostbyname(socket.gethostname())
-    server = HTTPServer(('', 0), FileHandler)
+    server = HTTPServer(('', args.port), FileHandler)
     port = server.server_port
 
     info = ServiceInfo("_zget._http._tcp.local.",
