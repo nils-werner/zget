@@ -17,6 +17,7 @@ try:
 except ImportError:
     from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
+from . import utils
 
 filename = ""
 basename = ""
@@ -49,14 +50,22 @@ def put(inargs=None):
 
     parser.add_argument(
         '--port', '-p',
-        type=int, nargs='?', default=0,
+        type=int, nargs='?',
         help="The port to share the file on."
+    )
+    parser.add_argument(
+        '--verbose', '-v',
+        action='store_true',
+        help="Enable debug messages."
     )
     parser.add_argument(
         'input',
         help="The file to share on the network"
     )
     args = parser.parse_args(inargs)
+
+    if args.port is None:
+        args.port = utils.config().getint('DEFAULT', 'port')
 
     if not 0 <= args.port <= 65535:
         raise ValueError("Port %d exceeds allowed range" % args.port)
@@ -68,6 +77,12 @@ def put(inargs=None):
     ip = socket.gethostbyname(socket.gethostname())
     server = HTTPServer(('', args.port), FileHandler)
     port = server.server_port
+
+    if args.verbose:
+        print(
+            "Listening on %s:%d, you may change port using --port"
+            % (ip, port)
+        )
 
     info = ServiceInfo("_zget._http._tcp.local.",
                        filehash + "._zget._http._tcp.local.",

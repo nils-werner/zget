@@ -62,3 +62,33 @@ Marcy then does
     $ zput annual_reports.xlsx
 
 Boom. Done.
+
+
+### Options
+
+You may inspect the available options using
+
+    $ zput -h
+
+or
+
+    $ zget -h
+
+
+Configuration
+-------------
+
+By default zget uses a random open port. This may be a problem when you have
+restrictive firewall settings.
+
+You may create a config file
+
+ - `~/.zget.cfg` on Linux/OSX
+ - `%APPDATA%/zget/zget.ini` on Windows
+
+to permanently set the port number zget uses, e.g.
+
+    [DEFAULT]
+    port = 8080
+
+Note that port numbers below 1024 may require root permissions to be opened.

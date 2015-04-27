@@ -17,6 +17,7 @@ filename = ""
 filehash = ""
 output = ""
 downloaded = False
+verbose = False
 
 
 class ServiceListener(object):
@@ -24,23 +25,30 @@ class ServiceListener(object):
         pass
 
     def add_service(self, zeroconf, type, name):
-        global downloaded, filename, filehash, output
+        global downloaded, filename, filehash, output, verbose
         if name == filehash + "._zget._http._tcp.local.":
             print("Peer found. Downloading...")
             info = zeroconf.get_service_info(type, name)
             if info:
                 address = socket.inet_ntoa(info.address)
                 port = info.port
+                if verbose:
+                    print("Downloading from %s:%d" % (address, port))
                 url = "http://" + address + ":" + str(port) + "/" + filename
                 urllib.urlretrieve(url, output)
                 downloaded = True
 
 
 def get(inargs=None):
-    global downloaded, filename, filehash, output
+    global downloaded, filename, filehash, output, verbose
 
     parser = argparse.ArgumentParser()
 
+    parser.add_argument(
+        '--verbose', '-v',
+        action='store_true',
+        help="Enable debug messages."
+    )
     parser.add_argument(
         'filename',
         help="The filename to look for on the network"
@@ -51,6 +59,8 @@ def get(inargs=None):
         help="The local filename to save to"
     )
     args = parser.parse_args(inargs)
+
+    verbose = args.verbose
 
     filename = args.filename
     filehash = hashlib.sha1(filename.encode('utf-8')).hexdigest()

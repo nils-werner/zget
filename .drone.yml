@@ -2,8 +2,8 @@ image: drone/scipy:2.7-pip
 script:
     - pip install -e .[tests,docs]
     - py.test
-    - zput LICENSE &
-    - zget LICENSE /dev/null
+    - zput -p 2000 -v LICENSE &
+    - zget -v LICENSE /dev/null
     - python setup.py egg_info -bdev sdist --formats gztar
 
 notify:
