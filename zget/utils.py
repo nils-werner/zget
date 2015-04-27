@@ -1,5 +1,8 @@
 import os
-import ConfigParser
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser
 
 
 def config():
