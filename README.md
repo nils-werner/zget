@@ -78,7 +78,8 @@ or
 Configuration
 -------------
 
-By default zget uses a random open port. This may be a problem when you have
+By default zget uses a random open port and the sending party must be able to
+accept incoming connections. This may be a problem when you have
 restrictive firewall settings.
 
 You may create a config file
