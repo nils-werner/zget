@@ -33,7 +33,13 @@ class FileHandler(BaseHTTPRequestHandler):
                 self.send_response(200)
                 self.send_header('Content-type', 'application/octet-stream')
                 self.end_headers()
-                self.wfile.write(fh.read())
+
+                while True:
+                    data = fh.read(2 ** 20)  # Read 1 MB of input file
+                    if not data:
+                        break
+                    self.wfile.write(data)
+
         else:
             print("Invalid request received. Aborting.")
             self.send_response(404)
