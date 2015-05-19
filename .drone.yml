@@ -4,7 +4,7 @@ script:
     - py.test
     - zput -p 2000 -v LICENSE &
     - zget -v LICENSE /dev/null
-    - python setup.py egg_info -bdev sdist --formats gztar
+    - python setup.py egg_info -b.dev sdist --formats gztar
 
 notify:
     email:
