@@ -7,7 +7,7 @@ if __name__ == "__main__":
         version="0.6",
 
         description='Zeroconf based peer to peer file transfer',
-        long_description="""Simply transfer a file using
+        long_description="""Simply transfer a file over the network using
 
 .. code:: bash
 
