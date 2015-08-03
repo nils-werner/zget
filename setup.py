@@ -46,6 +46,7 @@ Done.""",
                 'pytest',
                 'pytest-cov',
                 'pytest-pep8',
+                'tox',
             ],
         },
 
@@ -53,6 +54,7 @@ Done.""",
             'pytest',
             'pytest-cov',
             'pytest-pep8',
+            'tox',
         ],
 
         classifiers=[
