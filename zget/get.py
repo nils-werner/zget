@@ -34,7 +34,8 @@ class ServiceListener(object):
                 port = info.port
                 if verbose:
                     print("Downloading from %s:%d" % (address, port))
-                url = "http://" + address + ":" + str(port) + "/" + filename
+                url = "http://" + address + ":" + str(port) + "/" + \
+                      urllib.pathname2url(filename)
                 urllib.urlretrieve(url, output)
                 downloaded = True
 
