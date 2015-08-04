@@ -93,3 +93,25 @@ to permanently set the port number zget uses, e.g.
     port = 8080
 
 Note that port numbers below 1024 may require root permissions to be opened.
+
+
+Python Interface
+----------------
+
+As of zget 0.8, there exists a Python interface for sending and receiving
+files as function calls.
+
+For sending:
+
+    import zget
+    zget.put("filename", port=2200)
+
+and for receiving:
+
+    import zget
+    zget.get("filename", "filename_to_save_to")
+
+`port` and `filename_to_save_to` are both optional.
+
+Please bear in mind that these calls are *blocking* and cannot yet set a
+timeout after which they will abort.

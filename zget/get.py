@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from __future__ import absolute_import, division, print_function, \
     unicode_literals
+import os
 import sys
 import time
 import socket
@@ -10,39 +11,48 @@ except ImportError:
     import urllib
 import hashlib
 import argparse
+import logging
 
 from zeroconf import ServiceBrowser, Zeroconf
 
-filename = ""
-filehash = ""
-output = ""
-downloaded = False
-verbose = False
+from . import utils
+
+__all__ = ["get"]
 
 
 class ServiceListener(object):
+    """
+    Custom zeroconf listener that is trying to find the service we're looking
+    for.
+
+    """
+    filename = ""
+    filehash = ""
+    output = None
+    downloaded = False
+
     def remove_service(*args):
         pass
 
     def add_service(self, zeroconf, type, name):
-        global downloaded, filename, filehash, output, verbose
-        if name == filehash + "._zget._http._tcp.local.":
-            print("Peer found. Downloading...")
+        if name == self.filehash + "._zget._http._tcp.local.":
+            utils.logger.info("Peer found. Downloading...")
             info = zeroconf.get_service_info(type, name)
             if info:
                 address = socket.inet_ntoa(info.address)
                 port = info.port
-                if verbose:
-                    print("Downloading from %s:%d" % (address, port))
+                utils.logger.debug("Downloading from %s:%d" % (address, port))
                 url = "http://" + address + ":" + str(port) + "/" + \
-                      urllib.pathname2url(filename)
-                urllib.urlretrieve(url, output)
-                downloaded = True
+                      urllib.pathname2url(self.filename)
+                urllib.urlretrieve(url, self.output)
+                self.downloaded = True
 
 
-def get(inargs=None):
-    global downloaded, filename, filehash, output, verbose
+def cli(inargs=None):
+    """
+    Commandline interface for receiving files
 
+    """
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -61,25 +71,40 @@ def get(inargs=None):
     )
     args = parser.parse_args(inargs)
 
-    verbose = args.verbose
-
-    filename = args.filename
-    filehash = hashlib.sha1(filename.encode('utf-8')).hexdigest()
-    downloaded = False
-    if args.output is not None:
-        output = args.output
+    if args.verbose:
+        utils.enable_logger(logging.DEBUG)
     else:
+        utils.enable_logger()
+
+    get(args.filename, args.output)
+
+
+def get(filename, output=None):
+    """
+    Actual logic for receiving files. May be imported and called from other
+    modules, too.
+
+    """
+    basename = os.path.basename(filename)
+    filehash = hashlib.sha1(basename.encode('utf-8')).hexdigest()
+    if output is None:
         output = filename
 
     zeroconf = Zeroconf()
     listener = ServiceListener()
+    listener.filename = filename
+    listener.filehash = filehash
+    listener.output = output
+
+    utils.logger.debug("Looking for " + filehash + "._zget._http._tcp.local.")
+
     browser = ServiceBrowser(zeroconf, "_zget._http._tcp.local.", listener)
 
-    while not downloaded:
+    while not listener.downloaded:
         time.sleep(0.5)
-    print("Done.")
+    utils.logger.info("Done.")
     zeroconf.close()
 
 
 if __name__ == '__main__':
-    get(sys.argv[1:])
+    cli(sys.argv[1:])

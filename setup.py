@@ -71,7 +71,7 @@ Done.""",
         ],
 
         entry_points={'console_scripts': [
-            'zget=zget.get:get',
-            'zput=zget.put:put'
+            'zget=zget.get:cli',
+            'zput=zget.put:cli'
         ]},
     )
