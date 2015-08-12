@@ -134,14 +134,16 @@ def put(filename, address=None, port=None):
     )
 
     zeroconf = Zeroconf()
-    zeroconf.register_service(info)
+    try:
+        zeroconf.register_service(info)
 
-    server.handle_request()
-    utils.logger.info("Done.")
+        server.handle_request()
+        utils.logger.info("Done.")
+    except KeyboardInterrupt:
+        pass
 
     zeroconf.unregister_service(info)
     zeroconf.close()
-
 
 if __name__ == '__main__':
     cli(sys.argv[1:])

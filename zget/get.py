@@ -100,11 +100,13 @@ def get(filename, output=None):
 
     browser = ServiceBrowser(zeroconf, "_zget._http._tcp.local.", listener)
 
-    while not listener.downloaded:
-        time.sleep(0.5)
+    try:
+        while not listener.downloaded:
+            time.sleep(0.5)
+    except KeyboardInterrupt:
+        pass
     utils.logger.info("Done.")
     zeroconf.close()
-
 
 if __name__ == '__main__':
     cli(sys.argv[1:])
