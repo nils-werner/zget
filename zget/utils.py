@@ -1,5 +1,6 @@
 import sys
 import os
+import netifaces
 import logging
 try:
     import configparser
@@ -34,3 +35,16 @@ def enable_logger(level=logging.INFO):
     ch.setFormatter(formatter)
 
     logger.addHandler(ch)
+
+
+def ip_addr(interface=None):
+    """
+    Get IP address from default gateway interface.
+
+    Some OSes return 127.0.0.1 when using
+    socket.gethostbyname(socket.gethostname()),
+    so we're attempting to get a kind of valid hostname here.
+    """
+    if interface is None:
+        interface = netifaces.gateways()['default'][netifaces.AF_INET][1]
+    return netifaces.ifaddresses(interface)[netifaces.AF_INET][0]['addr']

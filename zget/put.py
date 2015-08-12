@@ -71,6 +71,10 @@ def cli(inargs=None):
         help="The port to share the file on."
     )
     parser.add_argument(
+        '--address', '-a', nargs='?',
+        help="The address to share the file on."
+    )
+    parser.add_argument(
         '--verbose', '-v',
         action='store_true',
         help="Enable debug messages."
@@ -86,10 +90,10 @@ def cli(inargs=None):
     else:
         utils.enable_logger()
 
-    put(args.input, args.port)
+    put(args.input, args.address, args.port)
 
 
-def put(filename, port=None):
+def put(filename, address=None, port=None):
     """
     Actual logic for sending files
 
@@ -103,7 +107,9 @@ def put(filename, port=None):
     basename = os.path.basename(filename)
     filehash = hashlib.sha1(basename.encode('utf-8')).hexdigest()
 
-    ip = socket.gethostbyname(socket.gethostname())
+    if address is None:
+        address = utils.ip_addr()
+
     server = HTTPServer(('', port), FileHandler)
     server.RequestHandlerClass.filename = filename
     server.RequestHandlerClass.basename = basename
@@ -111,7 +117,9 @@ def put(filename, port=None):
     port = server.server_port
 
     utils.logger.debug(
-        "Listening on %s:%d, you may change port using --port" % (ip, port)
+        "Listening on %s:%d \n"
+        "you may change address using --address and "
+        "port using --port" % (address, port)
     )
 
     utils.logger.debug(
@@ -121,7 +129,7 @@ def put(filename, port=None):
     info = ServiceInfo(
         "_zget._http._tcp.local.",
         "%s._zget._http._tcp.local." % filehash,
-        socket.inet_aton(ip), port, 0, 0,
+        socket.inet_aton(address), port, 0, 0,
         {'path': None}
     )
 
