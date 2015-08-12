@@ -4,7 +4,7 @@ if __name__ == "__main__":
     setuptools.setup(
         name='zget',
 
-        version="0.7",
+        version="0.8",
 
         description='Zeroconf based peer to peer file transfer',
         long_description="""Simply transfer a file over the network using
