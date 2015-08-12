@@ -33,6 +33,7 @@ Done.""",
 
         install_requires=[
             'zeroconf',
+            'netifaces',
         ],
 
         extras_require={
