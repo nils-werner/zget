@@ -167,6 +167,7 @@ def put(filename, interface=None, address=None, port=None):
     except KeyboardInterrupt:
         pass
 
+    server.socket.close()
     zeroconf.unregister_service(info)
     zeroconf.close()
 
