@@ -23,6 +23,15 @@ from . import utils
 __all__ = ["put"]
 
 
+def validate_address(address):
+    try:
+        socket.inet_aton(address)
+        return address
+    except socket.error:
+        raise argparse.ArgumentTypeError(
+            "%s is not a valid IP address" % address
+        )
+
 class FileHandler(BaseHTTPRequestHandler):
     """
     Custom HTTP upload handler that allows one single filename to be requested.
@@ -72,6 +81,7 @@ def cli(inargs=None):
     )
     parser.add_argument(
         '--address', '-a', nargs='?',
+        type=validate_address,
         help="The address to share the file on."
     )
     parser.add_argument(
