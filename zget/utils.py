@@ -45,6 +45,9 @@ def ip_addr(interface=None):
     socket.gethostbyname(socket.gethostname()),
     so we're attempting to get a kind of valid hostname here.
     """
-    if interface is None:
-        interface = netifaces.gateways()['default'][netifaces.AF_INET][1]
-    return netifaces.ifaddresses(interface)[netifaces.AF_INET][0]['addr']
+    try:
+        if interface is None:
+            interface = netifaces.gateways()['default'][netifaces.AF_INET][1]
+        return netifaces.ifaddresses(interface)[netifaces.AF_INET][0]['addr']
+    except KeyError:
+        raise ValueError("You have selected an invalid interface")

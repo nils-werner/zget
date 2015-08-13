@@ -76,8 +76,11 @@ def cli(inargs=None):
     else:
         utils.enable_logger()
 
-    get(args.filename, args.output)
-
+    try:
+        get(args.filename, args.output)
+    except Exception as e:
+        utils.logger.error(e.message)
+        sys.exit(1)
 
 def get(filename, output=None):
     """

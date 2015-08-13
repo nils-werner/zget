@@ -75,6 +75,10 @@ def cli(inargs=None):
         help="The address to share the file on."
     )
     parser.add_argument(
+        '--interface', '-i', nargs='?',
+        help="The interface to share the file on."
+    )
+    parser.add_argument(
         '--verbose', '-v',
         action='store_true',
         help="Enable debug messages."
@@ -90,10 +94,20 @@ def cli(inargs=None):
     else:
         utils.enable_logger()
 
-    put(args.input, args.address, args.port)
+    try:
+        if args.interface and args.address:
+            raise ValueError(
+                "You may only provide one of --address "
+                "or --interface"
+            )
+
+        put(args.input, args.interface, args.address, args.port)
+    except Exception as e:
+        utils.logger.error(e.message)
+        sys.exit(1)
 
 
-def put(filename, address=None, port=None):
+def put(filename, interface=None, address=None, port=None):
     """
     Actual logic for sending files
 
@@ -108,7 +122,7 @@ def put(filename, address=None, port=None):
     filehash = hashlib.sha1(basename.encode('utf-8')).hexdigest()
 
     if address is None:
-        address = utils.ip_addr()
+        address = utils.ip_addr(interface)
 
     server = HTTPServer(('', port), FileHandler)
     server.RequestHandlerClass.filename = filename
