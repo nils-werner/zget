@@ -14,6 +14,7 @@ def config():
     config = configparser.SafeConfigParser(
         defaults={
             'port': '0',
+            'interface': None,
         },
         allow_no_value=True
     )

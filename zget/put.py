@@ -123,6 +123,9 @@ def put(filename, interface=None, address=None, port=None):
     if port is None:
         port = utils.config().getint('DEFAULT', 'port')
 
+    if interface is None:
+        interface = utils.config().get('DEFAULT', 'interface')
+
     if not 0 <= port <= 65535:
         raise ValueError("Port %d exceeds allowed range" % port)
 

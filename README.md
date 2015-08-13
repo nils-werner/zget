@@ -80,17 +80,18 @@ Configuration
 
 By default zget uses a random open port and the sending party must be able to
 accept incoming connections. This may be a problem when you have
-restrictive firewall settings.
+restrictive firewall settings or multiple network cards.
 
 You may create a config file
 
  - `~/.zget.cfg` on Linux/OSX
  - `%APPDATA%/zget/zget.ini` on Windows
 
-to permanently set the port number zget uses, e.g.
+to permanently set the port number and interface zget uses, e.g.
 
     [DEFAULT]
     port = 8080
+    interface = eth0
 
 Note that port numbers below 1024 may require root permissions to be opened.
 
