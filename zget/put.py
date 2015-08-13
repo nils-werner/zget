@@ -124,7 +124,7 @@ def put(filename, interface=None, address=None, port=None):
     if address is None:
         address = utils.ip_addr(interface)
 
-    server = HTTPServer(('', port), FileHandler)
+    server = HTTPServer((address, port), FileHandler)
     server.RequestHandlerClass.filename = filename
     server.RequestHandlerClass.basename = basename
 
