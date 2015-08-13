@@ -57,8 +57,8 @@ def cli(inargs=None):
 
     parser.add_argument(
         '--verbose', '-v',
-        action='store_true',
-        help="Enable debug messages."
+        action='count', default=0,
+        help="Set verbosity level."
     )
     parser.add_argument(
         'filename',
@@ -71,10 +71,7 @@ def cli(inargs=None):
     )
     args = parser.parse_args(inargs)
 
-    if args.verbose:
-        utils.enable_logger(logging.DEBUG)
-    else:
-        utils.enable_logger()
+    utils.enable_logger(args.verbose)
 
     try:
         get(args.filename, args.output)

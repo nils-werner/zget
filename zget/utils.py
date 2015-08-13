@@ -26,7 +26,14 @@ def config():
     return config
 
 
-def enable_logger(level=logging.INFO):
+def enable_logger(verbosity=0):
+    if verbosity >= 2:
+        level = logging.DEBUG
+    elif verbosity == 1:
+        level = logging.INFO
+    else:
+        level = logging.NOTSET
+
     formatter = logging.Formatter('%(message)s')
     logger.setLevel(level)
 
