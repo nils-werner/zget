@@ -1,3 +1,12 @@
+zput -vv -i lo LICENSE &
+zget -vv LICENSE /dev/null
+
+zput -vv -a 127.0.0.1 LICENSE &
+zget -vv LICENSE /dev/null
+
+zput -vv -p 8808 LICENSE &
+zget -vv LICENSE /dev/null
+
 zput -vv LICENSE &
 zget -vv LICENSE /dev/null
 
