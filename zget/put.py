@@ -32,6 +32,7 @@ def validate_address(address):
             "%s is not a valid IP address" % address
         )
 
+
 class FileHandler(BaseHTTPRequestHandler):
     """
     Custom HTTP upload handler that allows one single filename to be requested.

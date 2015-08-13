@@ -79,6 +79,7 @@ def cli(inargs=None):
         utils.logger.error(e.message)
         sys.exit(1)
 
+
 def get(filename, output=None):
     """
     Actual logic for receiving files. May be imported and called from other
