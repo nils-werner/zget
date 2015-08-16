@@ -18,6 +18,7 @@ try:
 except ImportError:
     from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
+import progressbar
 from . import utils
 
 __all__ = ["put"]
@@ -44,16 +45,30 @@ class FileHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == urllib.pathname2url(os.path.join('/', self.basename)):
             utils.logger.info("Peer found. Uploading...")
-            with open(os.path.join(os.curdir, self.filename), 'rb') as fh:
+            full_path = os.path.join(os.curdir, self.filename)
+            with open(full_path, 'rb') as fh:
+                maxsize = os.path.getsize(full_path)
                 self.send_response(200)
                 self.send_header('Content-type', 'application/octet-stream')
+                self.send_header('Content-length', maxsize)
                 self.end_headers()
 
+                pbar = progressbar.ProgressBar(
+                    widgets=[
+                        progressbar.Percentage(),
+                        progressbar.Bar(),
+                        progressbar.ETA()
+                    ],
+                    maxval=maxsize
+                )
+                pbar.start()
                 while True:
                     data = fh.read(2 ** 20)  # Read 1 MB of input file
                     if not data:
                         break
                     self.wfile.write(data)
+                    pbar.update(fh.tell())
+                pbar.finish()
 
         else:
             self.send_response(404)

@@ -14,6 +14,7 @@ import argparse
 import logging
 
 from zeroconf import ServiceBrowser, Zeroconf
+import progressbar
 
 from . import utils
 
@@ -44,8 +45,36 @@ class ServiceListener(object):
                 utils.logger.debug("Downloading from %s:%d" % (address, port))
                 url = "http://" + address + ":" + str(port) + "/" + \
                       urllib.pathname2url(self.filename)
-                urllib.urlretrieve(url, self.output)
+
+                progress = Progresshook()
+                urllib.urlretrieve(
+                    url, self.output,
+                    reporthook=progress.update
+                )
+                progress.finish()
                 self.downloaded = True
+
+
+class Progresshook(object):
+    pbar = None
+
+    def update(self, count, blocksize, totalsize):
+        if totalsize > 0:
+            if self.pbar is None:
+                self.pbar = progressbar.ProgressBar(
+                    widgets=[
+                        progressbar.Percentage(),
+                        progressbar.Bar(),
+                        progressbar.ETA()
+                    ],
+                    maxval=totalsize
+                )
+                self.pbar.start()
+
+            self.pbar.update(min(count * blocksize, totalsize))
+
+    def finish(self):
+        self.pbar.finish()
 
 
 def cli(inargs=None):

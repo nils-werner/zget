@@ -34,6 +34,7 @@ Done.""",
         install_requires=[
             'zeroconf',
             'netifaces',
+            'progressbar2',
         ],
 
         extras_require={
