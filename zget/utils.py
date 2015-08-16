@@ -15,7 +15,29 @@ class Progresshook(object):
     pbar = None
 
     def update(self, count, blocksize, totalsize):
-        if totalsize > 0:
+
+        # In case we don't know the size of the file. zget < 0.8 did not
+        # report file sizes via HTTP.
+        if totalsize <= 0:
+            # The callback is called too rapidly, which makes the BouncingBar
+            # bounce too quickly and look stupid. By lowering the count number
+            # (which has no real meaning in this case anyways) the bar looks
+            # nicer
+            count /= 2 ** 8
+            if self.pbar is None:
+                self.pbar = progressbar.ProgressBar(
+                    widgets=[
+                        progressbar.BouncingBar(),
+                    ],
+                    maxval=progressbar.UnknownLength
+                )
+                self.pbar.start()
+
+            self.pbar.update(count)
+
+        # zget >= 0.8 does report file sizes and enables percentage and ETA
+        # display.
+        else:
             if self.pbar is None:
                 self.pbar = progressbar.ProgressBar(
                     widgets=[
@@ -23,11 +45,15 @@ class Progresshook(object):
                         progressbar.Bar(),
                         progressbar.ETA()
                     ],
-                    maxval=totalsize
+                    # Make sure we have at least 1, otherwise the bar does
+                    # not show 100% for small transfers
+                    maxval=max(totalsize // blocksize, 1)
                 )
                 self.pbar.start()
 
-            self.pbar.update(min(count * blocksize, totalsize))
+            # Make sure we have at least 1, otherwise the bar does not show
+            # 100% for small transfers
+            self.pbar.update(max(min(count, totalsize // blocksize), 1))
 
     def finish(self):
         if self.pbar is not None:
