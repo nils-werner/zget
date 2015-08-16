@@ -55,12 +55,12 @@ class FileHandler(BaseHTTPRequestHandler):
 
                 i = 0
                 while True:
-                    data = fh.read(2 ** 20)  # Read 1 MB of input file
+                    data = fh.read(1024 * 8)  # chunksize taken from urllib
                     if not data:
                         break
                     self.wfile.write(data)
                     if self.reporthook is not None:
-                        self.reporthook(i, 2 ** 20, maxsize)
+                        self.reporthook(i, 1024 * 8, maxsize)
                     i += 1
 
         else:
