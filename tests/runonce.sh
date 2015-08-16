@@ -1,3 +1,5 @@
+set -e
+
 zput -vv -i lo LICENSE &
 zget -vv LICENSE /dev/null
 
@@ -6,6 +8,9 @@ zget -vv LICENSE /dev/null
 
 zput -vv -p 8808 LICENSE &
 zget -vv LICENSE /dev/null
+
+zput -q LICENSE &
+zget -q LICENSE /dev/null
 
 zput -vv LICENSE &
 zget -vv LICENSE /dev/null

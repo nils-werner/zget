@@ -63,7 +63,12 @@ def cli(inargs=None):
     parser.add_argument(
         '--verbose', '-v',
         action='count', default=0,
-        help="Set verbosity level."
+        help="Set verbosity level, to show debug info."
+    )
+    parser.add_argument(
+        '--quiet', '-q',
+        action='count', default=0,
+        help="Set quietness level, to hide progess bar."
     )
     parser.add_argument(
         'filename',
@@ -80,7 +85,11 @@ def cli(inargs=None):
 
     progress = utils.Progresshook()
     try:
-        get(args.filename, args.output, reporthook=progress.update)
+        get(
+            args.filename,
+            args.output,
+            reporthook=progress.update if args.quiet == 0 else None
+        )
     except Exception as e:
         utils.logger.error(e.message)
         sys.exit(1)

@@ -100,7 +100,12 @@ def cli(inargs=None):
     parser.add_argument(
         '--verbose', '-v',
         action='count', default=0,
-        help="Set verbosity level."
+        help="Set verbosity level, to show debug info."
+    )
+    parser.add_argument(
+        '--quiet', '-q',
+        action='count', default=0,
+        help="Set quietness level, to hide progess bar."
     )
     parser.add_argument(
         'input',
@@ -123,7 +128,7 @@ def cli(inargs=None):
             args.interface,
             args.address,
             args.port,
-            reporthook=progress.update
+            reporthook=progress.update if args.quiet == 0 else None
         )
     except Exception as e:
         utils.logger.error(e.message)
