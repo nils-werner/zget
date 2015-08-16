@@ -18,7 +18,6 @@ try:
 except ImportError:
     from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
-import progressbar
 from . import utils
 
 __all__ = ["put"]
@@ -41,6 +40,7 @@ class FileHandler(BaseHTTPRequestHandler):
     """
     filename = ""
     basename = ""
+    reporthook = None
 
     def do_GET(self):
         if self.path == urllib.pathname2url(os.path.join('/', self.basename)):
@@ -53,22 +53,15 @@ class FileHandler(BaseHTTPRequestHandler):
                 self.send_header('Content-length', maxsize)
                 self.end_headers()
 
-                pbar = progressbar.ProgressBar(
-                    widgets=[
-                        progressbar.Percentage(),
-                        progressbar.Bar(),
-                        progressbar.ETA()
-                    ],
-                    maxval=maxsize
-                )
-                pbar.start()
+                i = 0
                 while True:
                     data = fh.read(2 ** 20)  # Read 1 MB of input file
                     if not data:
                         break
                     self.wfile.write(data)
-                    pbar.update(fh.tell())
-                pbar.finish()
+                    if self.reporthook is not None:
+                        self.reporthook(i, 2 ** 20, maxsize)
+                    i += 1
 
         else:
             self.send_response(404)
@@ -117,6 +110,7 @@ def cli(inargs=None):
 
     utils.enable_logger(args.verbose)
 
+    progress = utils.Progresshook()
     try:
         if args.interface and args.address:
             raise ValueError(
@@ -124,13 +118,20 @@ def cli(inargs=None):
                 "or --interface"
             )
 
-        put(args.input, args.interface, args.address, args.port)
+        put(
+            args.input,
+            args.interface,
+            args.address,
+            args.port,
+            reporthook=progress.update
+        )
     except Exception as e:
         utils.logger.error(e.message)
         sys.exit(1)
+    progress.finish()
 
 
-def put(filename, interface=None, address=None, port=None):
+def put(filename, interface=None, address=None, port=None, reporthook=None):
     """
     Actual logic for sending files
 
@@ -153,6 +154,7 @@ def put(filename, interface=None, address=None, port=None):
     server = HTTPServer((address, port), FileHandler)
     server.RequestHandlerClass.filename = filename
     server.RequestHandlerClass.basename = basename
+    server.RequestHandlerClass.reporthook = reporthook
 
     port = server.server_port
 

@@ -2,12 +2,36 @@ import sys
 import os
 import netifaces
 import logging
+import progressbar
 try:
     import configparser
 except ImportError:
     import ConfigParser as configparser
 
 logger = logging.getLogger('zget')
+
+
+class Progresshook(object):
+    pbar = None
+
+    def update(self, count, blocksize, totalsize):
+        if totalsize > 0:
+            if self.pbar is None:
+                self.pbar = progressbar.ProgressBar(
+                    widgets=[
+                        progressbar.Percentage(),
+                        progressbar.Bar(),
+                        progressbar.ETA()
+                    ],
+                    maxval=totalsize
+                )
+                self.pbar.start()
+
+            self.pbar.update(min(count * blocksize, totalsize))
+
+    def finish(self):
+        if self.pbar is not None:
+            self.pbar.finish()
 
 
 def config():

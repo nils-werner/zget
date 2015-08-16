@@ -14,7 +14,6 @@ import argparse
 import logging
 
 from zeroconf import ServiceBrowser, Zeroconf
-import progressbar
 
 from . import utils
 
@@ -31,6 +30,7 @@ class ServiceListener(object):
     filehash = ""
     output = None
     downloaded = False
+    reporthook = None
 
     def remove_service(*args):
         pass
@@ -46,35 +46,11 @@ class ServiceListener(object):
                 url = "http://" + address + ":" + str(port) + "/" + \
                       urllib.pathname2url(self.filename)
 
-                progress = Progresshook()
                 urllib.urlretrieve(
                     url, self.output,
-                    reporthook=progress.update
+                    reporthook=self.reporthook
                 )
-                progress.finish()
                 self.downloaded = True
-
-
-class Progresshook(object):
-    pbar = None
-
-    def update(self, count, blocksize, totalsize):
-        if totalsize > 0:
-            if self.pbar is None:
-                self.pbar = progressbar.ProgressBar(
-                    widgets=[
-                        progressbar.Percentage(),
-                        progressbar.Bar(),
-                        progressbar.ETA()
-                    ],
-                    maxval=totalsize
-                )
-                self.pbar.start()
-
-            self.pbar.update(min(count * blocksize, totalsize))
-
-    def finish(self):
-        self.pbar.finish()
 
 
 def cli(inargs=None):
@@ -102,14 +78,16 @@ def cli(inargs=None):
 
     utils.enable_logger(args.verbose)
 
+    progress = utils.Progresshook()
     try:
-        get(args.filename, args.output)
+        get(args.filename, args.output, reporthook=progress.update)
     except Exception as e:
         utils.logger.error(e.message)
         sys.exit(1)
+    progress.finish()
 
 
-def get(filename, output=None):
+def get(filename, output=None, reporthook=None):
     """
     Actual logic for receiving files. May be imported and called from other
     modules, too.
@@ -125,6 +103,7 @@ def get(filename, output=None):
     listener.filename = filename
     listener.filehash = filehash
     listener.output = output
+    listener.reporthook = reporthook
 
     utils.logger.debug("Looking for " + filehash + "._zget._http._tcp.local.")
 
