@@ -1,6 +1,12 @@
 set -e
 
-zput -vv -i lo LICENSE &
+if [[ `uname` == 'Darwin' ]]; then
+    IFACE='lo0'
+else
+    IFACE='lo'
+fi
+
+zput -vv -i $IFACE LICENSE &
 zget -vv LICENSE /dev/null
 
 zput -vv -a 127.0.0.1 LICENSE &
