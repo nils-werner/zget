@@ -135,9 +135,11 @@ def get(
     try:
         while not listener.downloaded:
             time.sleep(0.5)
-            if not listener.downloading \
-               and timeout is not None \
-               and time.time() - start_time > timeout:
+            if (
+                not listener.downloading and
+                timeout is not None and
+                time.time() - start_time > timeout
+            ):
                 utils.logger.info("Timeout.")
                 sys.exit(1)
     except KeyboardInterrupt:
