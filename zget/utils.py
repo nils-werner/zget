@@ -18,7 +18,7 @@ class TimeoutException(Exception):
 class Progresshook(object):
     pbar = None
 
-    def update(self, count, blocksize, totalsize):
+    def __call__(self, count, blocksize, totalsize):
 
         # In case we don't know the size of the file. zget < 0.8 did not
         # report file sizes via HTTP.
@@ -59,7 +59,10 @@ class Progresshook(object):
             # 100% for small transfers
             self.pbar.update(max(min(count, totalsize // blocksize), 1))
 
-    def finish(self):
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
         if self.pbar is not None:
             self.pbar.finish()
 

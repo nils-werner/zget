@@ -128,7 +128,6 @@ def cli(inargs=None):
 
     utils.enable_logger(args.verbose)
 
-    progress = utils.Progresshook()
     try:
         if args.interface and args.address:
             raise ValueError(
@@ -136,18 +135,18 @@ def cli(inargs=None):
                 "or --interface"
             )
 
-        put(
-            args.input,
-            interface=args.interface,
-            address=args.address,
-            port=args.port,
-            reporthook=progress.update if args.quiet == 0 else None,
-            timeout=args.timeout,
-        )
+        with utils.Progresshook() as progress:
+            put(
+                args.input,
+                interface=args.interface,
+                address=args.address,
+                port=args.port,
+                reporthook=progress if args.quiet == 0 else None,
+                timeout=args.timeout,
+            )
     except Exception as e:
         utils.logger.error(e.message)
         sys.exit(1)
-    progress.finish()
 
 
 def put(

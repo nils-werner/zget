@@ -77,18 +77,17 @@ def cli(inargs=None):
 
     utils.enable_logger(args.verbose)
 
-    progress = utils.Progresshook()
     try:
-        get(
-            args.filename,
-            args.output,
-            reporthook=progress.update if args.quiet == 0 else None,
-            timeout=args.timeout
-        )
+        with utils.Progresshook() as progress:
+            get(
+                args.filename,
+                args.output,
+                reporthook=progress if args.quiet == 0 else None,
+                timeout=args.timeout
+            )
     except Exception as e:
         utils.logger.error(e.message)
         sys.exit(1)
-    progress.finish()
 
 
 def get(
