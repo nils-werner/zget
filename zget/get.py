@@ -26,12 +26,9 @@ class ServiceListener(object):
     for.
 
     """
-    filename = ""
     filehash = ""
-    output = None
-    downloaded = False
-    downloading = False
-    reporthook = None
+    address = None
+    port = False
 
     def remove_service(*args):
         pass
@@ -41,18 +38,8 @@ class ServiceListener(object):
             utils.logger.info("Peer found. Downloading...")
             info = zeroconf.get_service_info(type, name)
             if info:
-                self.downloading = True
-                address = socket.inet_ntoa(info.address)
-                port = info.port
-                utils.logger.debug("Downloading from %s:%d" % (address, port))
-                url = "http://" + address + ":" + str(port) + "/" + \
-                      urllib.pathname2url(self.filename)
-
-                urllib.urlretrieve(
-                    url, self.output,
-                    reporthook=self.reporthook
-                )
-                self.downloaded = True
+                self.address = socket.inet_ntoa(info.address)
+                self.port = info.port
 
 
 def cli(inargs=None):
@@ -122,10 +109,7 @@ def get(
 
     zeroconf = Zeroconf()
     listener = ServiceListener()
-    listener.filename = filename
     listener.filehash = filehash
-    listener.output = output
-    listener.reporthook = reporthook
 
     utils.logger.debug("Looking for " + filehash + "._zget._http._tcp.local.")
 
@@ -133,15 +117,25 @@ def get(
 
     start_time = time.time()
     try:
-        while not listener.downloaded:
+        while listener.address is None:
             time.sleep(0.5)
             if (
-                not listener.downloading and
                 timeout is not None and
                 time.time() - start_time > timeout
             ):
                 utils.logger.info("Timeout.")
                 sys.exit(1)
+
+        utils.logger.debug(
+            "Downloading from %s:%d" % (listener.address, listener.port)
+        )
+        url = "http://" + listener.address + ":" + str(listener.port) + "/" + \
+              urllib.pathname2url(filename)
+
+        urllib.urlretrieve(
+            url, output,
+            reporthook=reporthook
+        )
     except KeyboardInterrupt:
         pass
     utils.logger.info("Done.")
