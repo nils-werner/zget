@@ -123,8 +123,7 @@ def get(
                 timeout is not None and
                 time.time() - start_time > timeout
             ):
-                utils.logger.info("Timeout.")
-                sys.exit(1)
+                raise utils.TimeoutException()
 
         utils.logger.debug(
             "Downloading from %s:%d" % (listener.address, listener.port)

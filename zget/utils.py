@@ -11,6 +11,10 @@ except ImportError:
 logger = logging.getLogger('zget')
 
 
+class TimeoutException(Exception):
+    message = "Timeout."
+
+
 class Progresshook(object):
     pbar = None
 
