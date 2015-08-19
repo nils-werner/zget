@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, \
     unicode_literals
 import os
 import sys
+import time
 import socket
 try:
     import urllib.request as urllib
@@ -108,6 +109,11 @@ def cli(inargs=None):
         help="Set quietness level, to hide progess bar."
     )
     parser.add_argument(
+        '--timeout', '-t',
+        type=int,
+        help="Set timeout after which program aborts transfer."
+    )
+    parser.add_argument(
         'input',
         help="The file to share on the network"
     )
@@ -125,10 +131,11 @@ def cli(inargs=None):
 
         put(
             args.input,
-            args.interface,
-            args.address,
-            args.port,
-            reporthook=progress.update if args.quiet == 0 else None
+            interface=args.interface,
+            address=args.address,
+            port=args.port,
+            reporthook=progress.update if args.quiet == 0 else None,
+            timeout=args.timeout,
         )
     except Exception as e:
         utils.logger.error(e.message)
@@ -136,7 +143,14 @@ def cli(inargs=None):
     progress.finish()
 
 
-def put(filename, interface=None, address=None, port=None, reporthook=None):
+def put(
+    filename,
+    interface=None,
+    address=None,
+    port=None,
+    reporthook=None,
+    timeout=None,
+):
     """
     Actual logic for sending files
 
@@ -157,6 +171,7 @@ def put(filename, interface=None, address=None, port=None, reporthook=None):
         address = utils.ip_addr(interface)
 
     server = HTTPServer((address, port), FileHandler)
+    server.timeout = timeout
     server.RequestHandlerClass.filename = filename
     server.RequestHandlerClass.basename = basename
     server.RequestHandlerClass.reporthook = reporthook
@@ -181,6 +196,7 @@ def put(filename, interface=None, address=None, port=None, reporthook=None):
     )
 
     zeroconf = Zeroconf()
+    start_time = time.time()
     try:
         zeroconf.register_service(info)
 
@@ -188,6 +204,10 @@ def put(filename, interface=None, address=None, port=None, reporthook=None):
         utils.logger.info("Done.")
     except KeyboardInterrupt:
         pass
+
+    if timeout is not None and time.time() - start_time > timeout:
+        utils.logger.info("Timeout.")
+        sys.exit(1)
 
     server.socket.close()
     zeroconf.unregister_service(info)

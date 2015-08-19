@@ -71,6 +71,11 @@ def cli(inargs=None):
         help="Set quietness level, to hide progess bar."
     )
     parser.add_argument(
+        '--timeout', '-t',
+        type=int,
+        help="Set timeout after which program aborts transfer."
+    )
+    parser.add_argument(
         'filename',
         help="The filename to look for on the network"
     )
@@ -88,7 +93,8 @@ def cli(inargs=None):
         get(
             args.filename,
             args.output,
-            reporthook=progress.update if args.quiet == 0 else None
+            reporthook=progress.update if args.quiet == 0 else None,
+            timeout=args.timeout
         )
     except Exception as e:
         utils.logger.error(e.message)
@@ -96,7 +102,12 @@ def cli(inargs=None):
     progress.finish()
 
 
-def get(filename, output=None, reporthook=None):
+def get(
+    filename,
+    output=None,
+    reporthook=None,
+    timeout=None
+):
     """
     Actual logic for receiving files. May be imported and called from other
     modules, too.
@@ -118,9 +129,13 @@ def get(filename, output=None, reporthook=None):
 
     browser = ServiceBrowser(zeroconf, "_zget._http._tcp.local.", listener)
 
+    start_time = time.time()
     try:
         while not listener.downloaded:
             time.sleep(0.5)
+            if timeout is not None and time.time() - start_time > timeout:
+                utils.logger.info("Timeout.")
+                sys.exit(1)
     except KeyboardInterrupt:
         pass
     utils.logger.info("Done.")

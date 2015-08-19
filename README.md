@@ -113,6 +113,3 @@ and for receiving:
     zget.get("filename", "filename_to_save_to")
 
 `port` and `filename_to_save_to` are both optional.
-
-Please bear in mind that these calls are *blocking* and cannot yet set a
-timeout after which they will abort.
