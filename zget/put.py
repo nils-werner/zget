@@ -36,6 +36,9 @@ def validate_address(address):
 
 class StateHTTPServer(HTTPServer):
     downloaded = False
+    filename = ""
+    basename = ""
+    reporthook = None
 
 
 class FileHandler(BaseHTTPRequestHandler):
@@ -43,14 +46,13 @@ class FileHandler(BaseHTTPRequestHandler):
     Custom HTTP upload handler that allows one single filename to be requested.
 
     """
-    filename = ""
-    basename = ""
-    reporthook = None
 
     def do_GET(self):
-        if self.path == urllib.pathname2url(os.path.join('/', self.basename)):
+        if self.path == urllib.pathname2url(
+            os.path.join('/', self.server.basename)
+        ):
             utils.logger.info("Peer found. Uploading...")
-            full_path = os.path.join(os.curdir, self.filename)
+            full_path = os.path.join(os.curdir, self.server.filename)
             with open(full_path, 'rb') as fh:
                 maxsize = os.path.getsize(full_path)
                 self.send_response(200)
@@ -64,8 +66,8 @@ class FileHandler(BaseHTTPRequestHandler):
                     if not data:
                         break
                     self.wfile.write(data)
-                    if self.reporthook is not None:
-                        self.reporthook(i, 1024 * 8, maxsize)
+                    if self.server.reporthook is not None:
+                        self.server.reporthook(i, 1024 * 8, maxsize)
                     i += 1
             self.server.downloaded = True
 
@@ -177,9 +179,9 @@ def put(
 
     server = StateHTTPServer((address, port), FileHandler)
     server.timeout = timeout
-    server.RequestHandlerClass.filename = filename
-    server.RequestHandlerClass.basename = basename
-    server.RequestHandlerClass.reporthook = reporthook
+    server.filename = filename
+    server.basename = basename
+    server.reporthook = reporthook
 
     port = server.server_port
 
