@@ -30,6 +30,7 @@ class ServiceListener(object):
     filehash = ""
     output = None
     downloaded = False
+    downloading = False
     reporthook = None
 
     def remove_service(*args):
@@ -40,6 +41,7 @@ class ServiceListener(object):
             utils.logger.info("Peer found. Downloading...")
             info = zeroconf.get_service_info(type, name)
             if info:
+                self.downloading = True
                 address = socket.inet_ntoa(info.address)
                 port = info.port
                 utils.logger.debug("Downloading from %s:%d" % (address, port))
@@ -133,7 +135,9 @@ def get(
     try:
         while not listener.downloaded:
             time.sleep(0.5)
-            if timeout is not None and time.time() - start_time > timeout:
+            if not listener.downloading \
+               and timeout is not None \
+               and time.time() - start_time > timeout:
                 utils.logger.info("Timeout.")
                 sys.exit(1)
     except KeyboardInterrupt:

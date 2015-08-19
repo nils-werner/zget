@@ -34,6 +34,10 @@ def validate_address(address):
         )
 
 
+class StateHTTPServer(HTTPServer):
+    downloaded = False
+
+
 class FileHandler(BaseHTTPRequestHandler):
     """
     Custom HTTP upload handler that allows one single filename to be requested.
@@ -63,6 +67,7 @@ class FileHandler(BaseHTTPRequestHandler):
                     if self.reporthook is not None:
                         self.reporthook(i, 1024 * 8, maxsize)
                     i += 1
+            self.server.downloaded = True
 
         else:
             self.send_response(404)
@@ -170,7 +175,7 @@ def put(
     if address is None:
         address = utils.ip_addr(interface)
 
-    server = HTTPServer((address, port), FileHandler)
+    server = StateHTTPServer((address, port), FileHandler)
     server.timeout = timeout
     server.RequestHandlerClass.filename = filename
     server.RequestHandlerClass.basename = basename
@@ -205,7 +210,7 @@ def put(
     except KeyboardInterrupt:
         pass
 
-    if timeout is not None and time.time() - start_time > timeout:
+    if timeout is not None and not server.downloaded:
         utils.logger.info("Timeout.")
         sys.exit(1)
 
