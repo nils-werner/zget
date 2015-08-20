@@ -121,6 +121,11 @@ def cli(inargs=None):
         help="Set timeout after which program aborts transfer."
     )
     parser.add_argument(
+        '--version', '-V',
+        action='version',
+        version='%%(prog)s %s' % utils.__version__
+    )
+    parser.add_argument(
         'input',
         help="The file to share on the network"
     )

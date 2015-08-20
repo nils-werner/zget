@@ -10,6 +10,8 @@ except ImportError:
 
 logger = logging.getLogger('zget')
 
+__version__ = "0.8"
+
 
 class TimeoutException(Exception):
     message = "Timeout."
