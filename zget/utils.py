@@ -27,7 +27,7 @@ class Progresshook(object):
             # bounce too quickly and look stupid. By lowering the count number
             # (which has no real meaning in this case anyways) the bar looks
             # nicer
-            count /= 2 ** 8
+            count /= 2 ** 10
             if self.pbar is None:
                 self.pbar = progressbar.ProgressBar(
                     widgets=[
