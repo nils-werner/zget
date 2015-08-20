@@ -145,6 +145,8 @@ def cli(inargs=None):
                 timeout=args.timeout,
             )
     except Exception as e:
+        if args.verbose:
+            raise
         utils.logger.error(e.message)
         sys.exit(1)
 
