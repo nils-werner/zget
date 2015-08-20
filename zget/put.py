@@ -25,6 +25,8 @@ __all__ = ["put"]
 
 
 def validate_address(address):
+    """ Validate IP address
+    """
     try:
         socket.inet_aton(address)
         return address
@@ -35,6 +37,10 @@ def validate_address(address):
 
 
 class StateHTTPServer(HTTPServer):
+    """
+    HTTP Server that knows a certain filename and can be set to remember if
+    that file has been transferred using :class:`FileHandler`
+    """
     downloaded = False
     filename = ""
     basename = ""
@@ -94,31 +100,31 @@ def cli(inargs=None):
     parser.add_argument(
         '--port', '-p',
         type=int, nargs='?',
-        help="The port to share the file on."
+        help="The port to share the file on"
     )
     parser.add_argument(
         '--address', '-a', nargs='?',
         type=validate_address,
-        help="The address to share the file on."
+        help="The address to share the file on"
     )
     parser.add_argument(
         '--interface', '-i', nargs='?',
-        help="The interface to share the file on."
+        help="The interface to share the file on"
     )
     parser.add_argument(
         '--verbose', '-v',
         action='count', default=0,
-        help="Set verbosity level, to show debug info."
+        help="Increase verbosity level, to show debug info"
     )
     parser.add_argument(
         '--quiet', '-q',
         action='count', default=0,
-        help="Set quietness level, to hide progess bar."
+        help="Increase quietness level, to hide progess bar"
     )
     parser.add_argument(
         '--timeout', '-t',
-        type=int,
-        help="Set timeout after which program aborts transfer."
+        type=int, metavar="SECONDS",
+        help="Set timeout after which program aborts transfer"
     )
     parser.add_argument(
         '--version', '-V',
@@ -164,8 +170,30 @@ def put(
     reporthook=None,
     timeout=None,
 ):
-    """
-    Actual logic for sending files
+    """Send a file using the zget protocol.
+
+    Parameters
+    ----------
+    filename : string
+        The filename to be transferred
+    interface : string
+        The network interface to use. Optional.
+    address : string
+        The network address to use. Optional.
+    port : int
+        The network port to use. Optional.
+    reporthook : callable
+        A hook that will be called during transfer. Handy for watching the
+        transfer. See :code:`urllib.urlretrieve` for callback parameters.
+        Optional.
+    timeout : int
+        Seconds to wait until process is aborted. A running transfer is not
+        aborted even when timeout was hit. Optional.
+
+    Raises
+    -------
+    TimeoutException
+        When a timeout occurred.
 
     """
     if port is None:

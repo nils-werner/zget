@@ -52,17 +52,17 @@ def cli(inargs=None):
     parser.add_argument(
         '--verbose', '-v',
         action='count', default=0,
-        help="Set verbosity level, to show debug info."
+        help="Increase verbosity level, to show debug info"
     )
     parser.add_argument(
         '--quiet', '-q',
         action='count', default=0,
-        help="Set quietness level, to hide progess bar."
+        help="Increase quietness level, to hide progess bar"
     )
     parser.add_argument(
         '--timeout', '-t',
-        type=int,
-        help="Set timeout after which program aborts transfer."
+        type=int, metavar="SECONDS",
+        help="Set timeout after which program aborts transfer"
     )
     parser.add_argument(
         '--version', '-V',
@@ -103,9 +103,26 @@ def get(
     reporthook=None,
     timeout=None
 ):
-    """
-    Actual logic for receiving files. May be imported and called from other
-    modules, too.
+    """Receive and save a file using the zget protocol.
+
+    Parameters
+    ----------
+    filename : string
+        The filename to be transferred
+    output : string
+        The filename to save to. Optional.
+    reporthook : callable
+        A hook that will be called during transfer. Handy for watching the
+        transfer. See :code:`urllib.urlretrieve` for callback parameters.
+        Optional.
+    timeout : int
+        Seconds to wait until process is aborted. A running transfer is not
+        aborted even when timeout was hit. Optional.
+
+    Raises
+    -------
+    TimeoutException
+        When a timeout occurred.
 
     """
     basename = os.path.basename(filename)

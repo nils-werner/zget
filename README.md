@@ -2,6 +2,7 @@ zget
 ====
 
 [![Build Status](https://travis-ci.org/nils-werner/zget.svg?branch=master)](https://travis-ci.org/nils-werner/zget)
+[![Docs Status](https://readthedocs.org/projects/zget/badge/?version=latest)](https://zget.readthedocs.org/en/latest/)
 [![Latest Version](https://pypip.in/version/zget/badge.svg)](https://pypi.python.org/pypi/zget/)
 [![Supported Python versions](https://pypip.in/py_versions/zget/badge.svg)](https://pypi.python.org/pypi/zget/)
 [![License](https://pypip.in/license/zget/badge.svg)](https://pypi.python.org/pypi/zget/)

@@ -14,10 +14,15 @@ __version__ = "0.8"
 
 
 class TimeoutException(Exception):
+    """ Exception raised when a timeout was hit.
+    """
     message = "Timeout."
 
 
 class Progresshook(object):
+    """ Simple context manager that shows a progressbar for
+    :code:`urllib.urlretrieve`-like callbacks.
+    """
     pbar = None
 
     def __call__(self, count, blocksize, totalsize):
@@ -70,6 +75,8 @@ class Progresshook(object):
 
 
 def config():
+    """ Reads config values from zget.cfg or zget.ini
+    """
     config = configparser.SafeConfigParser(
         defaults={
             'port': '0',
@@ -87,6 +94,8 @@ def config():
 
 
 def enable_logger(verbosity=0):
+    """ Set up and enable logger
+    """
     if verbosity >= 2:
         level = logging.DEBUG
     elif verbosity == 1:
@@ -105,8 +114,7 @@ def enable_logger(verbosity=0):
 
 
 def ip_addr(interface=None):
-    """
-    Get IP address from default gateway interface.
+    """ Get IP address from default gateway interface.
 
     Some OSes return 127.0.0.1 when using
     socket.gethostbyname(socket.gethostname()),
