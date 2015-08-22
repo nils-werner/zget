@@ -113,4 +113,4 @@ and for receiving:
     import zget
     zget.get("filename", "filename_to_save_to")
 
-`port` and `filename_to_save_to` are both optional.
+For more information please see the [API reference](https://zget.readthedocs.org/).
