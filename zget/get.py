@@ -146,6 +146,7 @@ def get(
                 timeout is not None and
                 time.time() - start_time > timeout
             ):
+                zeroconf.close()
                 raise utils.TimeoutException()
 
         utils.logger.debug(

@@ -247,6 +247,8 @@ def put(
         pass
 
     if timeout is not None and not server.downloaded:
+        zeroconf.unregister_service(info)
+        zeroconf.close()
         raise utils.TimeoutException()
 
     server.socket.close()
