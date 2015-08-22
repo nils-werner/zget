@@ -1,0 +1,19 @@
+0.9:
+ - ENH: --timeout option
+ - ENH: --interface option
+ - ENH: --address option
+ - ENH: progress bar
+ - DOC: Documented Python interface
+0.8:
+ - ENH: Python interface
+ - ENH: Removed global variables
+ - ENH: Redesigned way of selecting default network interface
+0.7:
+ - FIX: Fixed handling of filenames with spaces in them in Python 3
+0.6:
+ - ENH: Allowed setting port manually
+ - FIX: Reading file in chunks rather than as a whole
+0.5:
+ - FIX: Fixed bug when sending file from different directory
+0.4:
+ - ENH: Initial Python 3 support
