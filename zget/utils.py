@@ -134,7 +134,7 @@ def default_interface():
     return netifaces.gateways()['default'][netifaces.AF_INET][1]
 
 
-def ip_addr(interface=None):
+def ip_addr(interface):
     """ Get IP address from interface.
 
     """
