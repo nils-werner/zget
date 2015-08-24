@@ -249,7 +249,7 @@ man_pages = [
 texinfo_documents = [
     ('index', 'zget', u'zget Documentation',
      u'Nils Werner', 'zget',
-     'Audio Degradation Toolbox and Commandline Utility.',
+     'Zeroconf based peer to peer file transfer',
      'Miscellaneous'),
 ]
 

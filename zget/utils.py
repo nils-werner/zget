@@ -10,7 +10,7 @@ except ImportError:
 
 logger = logging.getLogger('zget')
 
-__version__ = "0.8"
+__version__ = "0.9"
 
 
 class TimeoutException(Exception):
@@ -28,7 +28,7 @@ class Progresshook(object):
 
     def __call__(self, count, blocksize, totalsize):
 
-        # In case we don't know the size of the file. zget < 0.8 did not
+        # In case we don't know the size of the file. zget < 0.9 did not
         # report file sizes via HTTP.
         if totalsize <= 0:
             if self.pbar is None:
@@ -48,7 +48,7 @@ class Progresshook(object):
             # 100% for small transfers
             self.pbar.update(max(count * blocksize, 1))
 
-        # zget >= 0.8 does report file sizes and enables percentage and ETA
+        # zget >= 0.9 does report file sizes and enables percentage and ETA
         # display.
         else:
             if self.pbar is None:
