@@ -212,6 +212,9 @@ def put(
     basename = os.path.basename(filename)
     filehash = hashlib.sha1(basename.encode('utf-8')).hexdigest()
 
+    if interface is None:
+        interface = utils.default_interface()
+
     if address is None:
         address = utils.ip_addr(interface)
 
@@ -222,6 +225,10 @@ def put(
     server.reporthook = reporthook
 
     port = server.server_port
+
+    utils.logger.debug(
+        "Using interface %s" % interface
+    )
 
     utils.logger.debug(
         "Listening on %s:%d \n"
