@@ -114,12 +114,12 @@ def cli(inargs=None):
     parser.add_argument(
         '--verbose', '-v',
         action='count', default=0,
-        help="Increase verbosity level, to show debug info"
+        help="Verbose mode. Multiple -v options increase the verbosity"
     )
     parser.add_argument(
         '--quiet', '-q',
         action='count', default=0,
-        help="Increase quietness level, to hide progess bar"
+        help="Quiet mode. Hides progess bar"
     )
     parser.add_argument(
         '--timeout', '-t',
