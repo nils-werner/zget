@@ -23,6 +23,7 @@ class Progresshook(object):
     """ Simple context manager that shows a progressbar for
     :code:`urllib.urlretrieve`-like callbacks.
     """
+    filename = ""
     pbar = None
 
     def __call__(self, count, blocksize, totalsize):
@@ -30,21 +31,22 @@ class Progresshook(object):
         # In case we don't know the size of the file. zget < 0.8 did not
         # report file sizes via HTTP.
         if totalsize <= 0:
-            # The callback is called too rapidly, which makes the BouncingBar
-            # bounce too quickly and look stupid. By lowering the count number
-            # (which has no real meaning in this case anyways) the bar looks
-            # nicer
-            count /= 2 ** 10
             if self.pbar is None:
                 self.pbar = progressbar.ProgressBar(
                     widgets=[
+                        self.filename,
+                        ' ',
                         progressbar.BouncingBar(),
+                        ' ',
+                        progressbar.FileTransferSpeed(),
                     ],
                     maxval=progressbar.UnknownLength
                 )
                 self.pbar.start()
 
-            self.pbar.update(count)
+            # Make sure we have at least 1, otherwise the bar does not show
+            # 100% for small transfers
+            self.pbar.update(max(count * blocksize, 1))
 
         # zget >= 0.8 does report file sizes and enables percentage and ETA
         # display.
@@ -52,19 +54,28 @@ class Progresshook(object):
             if self.pbar is None:
                 self.pbar = progressbar.ProgressBar(
                     widgets=[
+                        self.filename,
+                        ' ',
                         progressbar.Percentage(),
+                        ' ',
                         progressbar.Bar(),
-                        progressbar.ETA()
+                        ' ',
+                        progressbar.ETA(),
+                        ' ',
+                        progressbar.FileTransferSpeed(),
                     ],
                     # Make sure we have at least 1, otherwise the bar does
                     # not show 100% for small transfers
-                    maxval=max(totalsize // blocksize, 1)
+                    maxval=max(totalsize, 1)
                 )
                 self.pbar.start()
 
             # Make sure we have at least 1, otherwise the bar does not show
             # 100% for small transfers
-            self.pbar.update(max(min(count, totalsize // blocksize), 1))
+            self.pbar.update(max(min(count * blocksize, totalsize), 1))
+
+    def __init__(self, filename=""):
+        self.filename = filename
 
     def __enter__(self):
         return self

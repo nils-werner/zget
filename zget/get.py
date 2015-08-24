@@ -83,7 +83,7 @@ def cli(inargs=None):
     utils.enable_logger(args.verbose)
 
     try:
-        with utils.Progresshook() as progress:
+        with utils.Progresshook(args.filename) as progress:
             get(
                 args.filename,
                 args.output,

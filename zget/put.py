@@ -150,7 +150,7 @@ def cli(inargs=None):
                 "or --interface"
             )
 
-        with utils.Progresshook() as progress:
+        with utils.Progresshook(args.input) as progress:
             put(
                 args.input,
                 interface=args.interface,
