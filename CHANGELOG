@@ -2,8 +2,10 @@
  - ENH: --timeout option
  - ENH: --interface option
  - ENH: --address option
+ - ENH: --version option
  - ENH: progress bar
  - DOC: Documented Python interface
+ - DOC: CHANGELOG file
 0.8:
  - ENH: Python interface
  - ENH: Removed global variables
