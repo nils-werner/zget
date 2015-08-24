@@ -251,20 +251,18 @@ def put(
     start_time = time.time()
     try:
         zeroconf.register_service(info)
-
         server.handle_request()
-        utils.logger.info("Done.")
     except KeyboardInterrupt:
         pass
-
-    if timeout is not None and not server.downloaded:
-        zeroconf.unregister_service(info)
-        zeroconf.close()
-        raise utils.TimeoutException()
 
     server.socket.close()
     zeroconf.unregister_service(info)
     zeroconf.close()
+
+    if timeout is not None and not server.downloaded:
+        raise utils.TimeoutException()
+    else:
+        utils.logger.info("Done.")
 
 if __name__ == '__main__':
     cli(sys.argv[1:])
