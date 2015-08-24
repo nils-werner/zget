@@ -29,6 +29,8 @@ your needs:
  - :code:`-q` lets you hide the progress bar, for batch processing.
  - :code:`-t SECONDS` lets you set a timeout after which the transfer is aborted and
    a non-zero exit value is returned
+ - :code:`-V` Show version number and exit.
+ - :code:`-h` Show help and exit.
  
 Download
 ------
@@ -40,5 +42,7 @@ your needs:
  - :code:`-q` lets you hide the progress bar, for batch processing.
  - :code:`-t SECONDS` lets you set a timeout after which the transfer is aborted and
    a non-zero exit value is returned
+ - :code:`-V` Show version number and exit.
+ - :code:`-h` Show help and exit.
 
 .. note:: Each unit provides a help-switch :code:`-h` to investigate its parameters.

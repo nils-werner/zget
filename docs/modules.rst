@@ -1,5 +1,5 @@
-Modules
-=======
+Python Interface
+================
 
 .. toctree::
    :maxdepth: 4

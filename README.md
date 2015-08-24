@@ -2,7 +2,7 @@ zget
 ====
 
 [![Build Status](https://travis-ci.org/nils-werner/zget.svg?branch=master)](https://travis-ci.org/nils-werner/zget)
-[![Docs Status](https://readthedocs.org/projects/zget/badge/?version=latest)](https://zget.readthedocs.org/en/latest/)
+[![Docs Status](https://readthedocs.org/projects/zget/badge/?version=stable)](https://zget.readthedocs.org/en/stable/)
 [![Latest Version](https://pypip.in/version/zget/badge.svg)](https://pypi.python.org/pypi/zget/)
 [![Supported Python versions](https://pypip.in/py_versions/zget/badge.svg)](https://pypi.python.org/pypi/zget/)
 [![License](https://pypip.in/license/zget/badge.svg)](https://pypi.python.org/pypi/zget/)
@@ -88,7 +88,7 @@ You may create a config file
  - `~/.zget.cfg` on Linux/OSX
  - `%APPDATA%/zget/zget.ini` on Windows
 
-to permanently set the port number and interface zget uses, e.g.
+to permanently set the port number and/or interface zget uses, e.g.
 
     [DEFAULT]
     port = 8080
@@ -101,7 +101,7 @@ Python Interface
 ----------------
 
 As of zget 0.8, there exists a Python interface for sending and receiving
-files as function calls.
+files as function calls. E.g.:
 
 For sending:
 

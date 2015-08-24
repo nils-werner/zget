@@ -1,9 +1,6 @@
 License
 =======
 
-Code
-----
-
 The code in this package has been licensed using the MIT/BSD license:
 
     Copyright (c) 2015, Nils Werner
