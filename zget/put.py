@@ -140,6 +140,10 @@ def cli(inargs=None):
     utils.enable_logger(args.verbose)
 
     try:
+        if not os.path.isfile(args.input):
+            raise ValueError(
+                "File %s does not exist" % args.input
+            )
         if args.interface and args.address:
             raise ValueError(
                 "You may only provide one of --address "
