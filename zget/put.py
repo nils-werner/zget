@@ -248,7 +248,6 @@ def put(
     )
 
     zeroconf = Zeroconf()
-    start_time = time.time()
     try:
         zeroconf.register_service(info)
         server.handle_request()
