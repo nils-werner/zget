@@ -3,9 +3,9 @@ zget
 
 [![Build Status](https://travis-ci.org/nils-werner/zget.svg?branch=master)](https://travis-ci.org/nils-werner/zget)
 [![Docs Status](https://readthedocs.org/projects/zget/badge/?version=stable)](https://zget.readthedocs.org/en/stable/)
-[![Latest Version](https://pypip.in/version/zget/badge.svg)](https://pypi.python.org/pypi/zget/)
-[![Supported Python versions](https://pypip.in/py_versions/zget/badge.svg)](https://pypi.python.org/pypi/zget/)
-[![License](https://pypip.in/license/zget/badge.svg)](https://pypi.python.org/pypi/zget/)
+[![Latest Version](https://img.shields.io/pypi/v/zget.svg)](https://pypi.python.org/pypi/zget/)
+[![Supported Python versions](https://img.shields.io/pypi/pyversions/zget.svg)](https://pypi.python.org/pypi/zget/)
+[![License](https://img.shields.io/pypi/l/zget.svg)](https://pypi.python.org/pypi/zget/)
 
 A simple, Zeroconf-based, peer to peer file transfer utility, for situations where you and your peer are sitting next to each other and want to transfer a file quickly (and can shout the filename across the room).
 
