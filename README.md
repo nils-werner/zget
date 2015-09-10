@@ -20,7 +20,13 @@ The only third party dependency is [zeroconf](https://pypi.python.org/pypi/zeroc
 Installation
 ------------
 
-    $ pip install zget
+    $ pip install --user zget
+
+If `zget` cannot be found afterwards you may also need to add
+
+    export PATH=$HOME/.local/bin:$PATH
+
+to your `.bashrc`.
 
 Usage
 -----
