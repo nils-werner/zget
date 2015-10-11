@@ -1,0 +1,177 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2015-11-01 14:39+0100\n"
+"PO-Revision-Date: 2015-11-01 14:40+0100\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: de_DE\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.8.5\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: zget/get.py:41
+msgid "Peer found. Downloading..."
+msgstr "Gegenstelle gefunden. Lade herunter..."
+
+#: zget/get.py:58 zget/put.py:125
+msgid "Verbose mode. Multiple -v options increase the verbosity"
+msgstr "Verbose Modus. Mehrere -v optionen erhöhen ausführlichkeit"
+
+#: zget/get.py:63 zget/put.py:130
+msgid "Quiet mode. Hides progess bar"
+msgstr "Stiller Modus. Versteckt Fortschrittsbalken"
+
+#: zget/get.py:67 zget/put.py:134
+msgid "SECONDS"
+msgstr "SEKUNDEN"
+
+#: zget/get.py:68 zget/put.py:135
+msgid "Set timeout after which program aborts transfer"
+msgstr "Zeitdauer, nach der Transfer abgebrochen wird"
+
+#: zget/get.py:76
+msgid "filename"
+msgstr "dateiname"
+
+#: zget/get.py:78
+msgid "The filename to look for on the network"
+msgstr "Der Dateiname, nach dem im Netzwerk gesucht werden soll"
+
+#: zget/get.py:81
+msgid "output"
+msgstr "ausgabe"
+
+#: zget/get.py:83
+msgid "The local filename to save to"
+msgstr "Die lokale Datei zum Speichern"
+
+#: zget/get.py:93
+#, python-format
+msgid "Upload a file using `zput <filename> %s`"
+msgstr "Laden Sie eine Datei mittels `zput <filename> %s` hoch"
+
+#: zget/get.py:98
+#, python-format
+msgid "Upload a file using `zput %(f)s` or `zput <filename> %(f)s`"
+msgstr "Laden Sie eine Datei mittels `zput %(f)s` oder `zput <filename> %(f)s` hoch"
+
+#: zget/get.py:159
+#, python-format
+msgid "Looking for %s._zget._http._tcp.local."
+msgstr "Suche nach %s._zget._http._tcp.local."
+
+#: zget/get.py:175
+#, python-format
+msgid "Downloading from %(a)s:%(p)d"
+msgstr "Lade herunter von %(a)s:%(p)d"
+
+#: zget/get.py:187 zget/put.py:300
+msgid "Done."
+msgstr "Fertig."
+
+#: zget/put.py:36
+#, python-format
+msgid "%s is not a valid IP address"
+msgstr "%s ist keine gültige IP Adresse"
+
+#: zget/put.py:62
+msgid "Peer found. Uploading..."
+msgstr "Gegenstelle gefunden. Lade hoch..."
+
+#: zget/put.py:91
+msgid "Invalid request received. Aborting."
+msgstr "Ungültige Anfrage empfangen. Breche ab."
+
+#: zget/put.py:110
+msgid "PORT"
+msgstr "PORT"
+
+#: zget/put.py:111
+msgid "The port to share the file on"
+msgstr "Der Port auf dem die Datei geteilt werden soll"
+
+#: zget/put.py:115
+msgid "ADDRESS"
+msgstr "ADRESSE"
+
+#: zget/put.py:116
+msgid "The address to share the file on"
+msgstr "Die Adresse auf der die Datei geteilt werden soll"
+
+#: zget/put.py:119
+msgid "INTERFACE"
+msgstr "INTERFACE"
+
+#: zget/put.py:120
+msgid "The interface to share the file on"
+msgstr "Das Interface auf dem die Datei geteilt werden soll"
+
+#: zget/put.py:143
+msgid "input"
+msgstr "eingabe"
+
+#: zget/put.py:144
+msgid "The file to share on the network"
+msgstr "Die Datei, die im Netzwert geteilt werden soll"
+
+#: zget/put.py:158
+#, python-format
+msgid "File %s does not exist"
+msgstr "Datei %s existiert nicht"
+
+#: zget/put.py:162
+msgid "You may only provide one of --address or --interface"
+msgstr "Sie können lediglich --address oder --interface setzen, aber nicht beide"
+
+#: zget/put.py:170
+#, python-format
+msgid "Download this file using `zget %(f)s` or `zget %(o)s`"
+msgstr "Laden Sie diese Datei mittels `zget %(f)s` oder `zget %(o)s` herunter"
+
+#: zget/put.py:236
+#, python-format
+msgid "Port %d exceeds allowed range"
+msgstr "Port %d liegt oberhalb des erlaubten Wertebereich"
+
+#: zget/put.py:262
+#, python-format
+msgid "Using interface %s"
+msgstr "Benutze Interface %s"
+
+#: zget/put.py:266
+#, python-format
+msgid ""
+"Listening on %(a)s:%(p)d \n"
+"you may change address using --address and port using --port"
+msgstr ""
+"Horche auf %(a)s:%(p)d \n"
+"Sie können Addresse mittels --address und Port mittels --port verändern"
+
+#: zget/put.py:276
+#, python-format
+msgid "Broadcasting as %s._zget._http._tcp.local."
+msgstr "Sende als %s._zget._http._tcp.local."
+
+#: zget/utils.py:37
+msgid "Timeout."
+msgstr "Zeitüberschreitung."
+
+#: zget/utils.py:162
+msgid "You have selected an invalid interface"
+msgstr "Sie haben ein ungültiges Interface gewählt."
+
+#~ msgid "usage"
+#~ msgstr "Benutzung"
+
+#~ msgid "%(prog)s: error: %(message)s\n"
+#~ msgstr "%(prog)s: Fehler: %(message)s\n"
+
+#~ msgid "show this help message and exit"
+#~ msgstr "Zeige diese Nachricht und beende"
+
+#~ msgid "error:"
+#~ msgstr "Fehler:"

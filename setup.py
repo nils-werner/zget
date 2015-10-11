@@ -1,4 +1,12 @@
 import setuptools
+from setuptools.command.sdist import sdist
+
+
+class Sdist(sdist):
+    def run(self):
+        self.run_command('compile_catalog')
+        sdist.run(self)
+
 
 if __name__ == "__main__":
     setuptools.setup(
@@ -36,6 +44,10 @@ Done.""",
             'netifaces',
             'progressbar2',
             'requests',
+        ],
+
+        setup_requires=[
+            'babel'
         ],
 
         extras_require={
@@ -77,4 +89,6 @@ Done.""",
             'zget=zget.get:cli',
             'zput=zget.put:cli'
         ]},
+
+        cmdclass={'sdist': Sdist},
     )

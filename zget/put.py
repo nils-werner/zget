@@ -10,7 +10,6 @@ try:
 except ImportError:
     import urllib
 import hashlib
-import argparse
 import logging
 
 from zeroconf import ServiceInfo, Zeroconf
@@ -20,6 +19,8 @@ except ImportError:
     from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
 from . import utils
+from .utils import _
+import argparse
 
 __all__ = ["put"]
 
@@ -32,7 +33,7 @@ def validate_address(address):
         return address
     except socket.error:
         raise argparse.ArgumentTypeError(
-            "%s is not a valid IP address" % address
+            _("%s is not a valid IP address") % address
         )
 
 
@@ -58,7 +59,7 @@ class FileHandler(BaseHTTPRequestHandler):
             lambda x: urllib.pathname2url(os.path.join('/', x)),
             self.server.allowed_basenames
         ):
-            utils.logger.info("Peer found. Uploading...")
+            utils.logger.info(_("Peer found. Uploading..."))
             full_path = os.path.join(os.curdir, self.server.filename)
             with open(full_path, 'rb') as fh:
                 maxsize = os.path.getsize(full_path)
@@ -87,7 +88,7 @@ class FileHandler(BaseHTTPRequestHandler):
         else:
             self.send_response(404)
             self.end_headers()
-            raise RuntimeError("Invalid request received. Aborting.")
+            raise RuntimeError(_("Invalid request received. Aborting."))
 
     def log_message(self, format, *args):
         """
@@ -106,32 +107,32 @@ def cli(inargs=None):
 
     parser.add_argument(
         '--port', '-p',
-        type=int, nargs='?',
-        help="The port to share the file on"
+        type=int, nargs='?', metavar=_("PORT"),
+        help=_("The port to share the file on")
     )
     parser.add_argument(
         '--address', '-a', nargs='?',
-        type=validate_address,
-        help="The address to share the file on"
+        type=validate_address, metavar=_("ADDRESS"),
+        help=_("The address to share the file on")
     )
     parser.add_argument(
-        '--interface', '-i', nargs='?',
-        help="The interface to share the file on"
+        '--interface', '-i', nargs='?', metavar=_("INTERFACE"),
+        help=_("The interface to share the file on")
     )
     parser.add_argument(
         '--verbose', '-v',
         action='count', default=0,
-        help="Verbose mode. Multiple -v options increase the verbosity"
+        help=_("Verbose mode. Multiple -v options increase the verbosity")
     )
     parser.add_argument(
         '--quiet', '-q',
         action='count', default=0,
-        help="Quiet mode. Hides progess bar"
+        help=_("Quiet mode. Hides progess bar")
     )
     parser.add_argument(
         '--timeout', '-t',
-        type=int, metavar="SECONDS",
-        help="Set timeout after which program aborts transfer"
+        type=int, metavar=_("SECONDS"),
+        help=_("Set timeout after which program aborts transfer")
     )
     parser.add_argument(
         '--version', '-V',
@@ -139,8 +140,8 @@ def cli(inargs=None):
         version='%%(prog)s %s' % utils.__version__
     )
     parser.add_argument(
-        'input',
-        help="The file to share on the network"
+        'input', metavar=_("input"),
+        help=_("The file to share on the network")
     )
     parser.add_argument(
         'output',
@@ -154,21 +155,21 @@ def cli(inargs=None):
     try:
         if not os.path.isfile(args.input):
             raise ValueError(
-                "File %s does not exist" % args.input
+                _("File %s does not exist") % args.input
             )
         if args.interface and args.address:
             raise ValueError(
-                "You may only provide one of --address "
-                "or --interface"
+                _("You may only provide one of --address "
+                  "or --interface")
             )
 
         if args.output is None:
             args.output = utils.generate_alias()
 
         if not args.quiet:
-            print("Download this file using `zget %(f)s` or `zget %(o)s`" % {
-                'f': os.path.basename(args.input), 'o': args.output
-            })
+            print(_(
+                "Download this file using `zget %(f)s` or `zget %(o)s`"
+            ) % {'f': os.path.basename(args.input), 'o': args.output})
 
         with utils.Progresshook(args.input) as progress:
             put(
@@ -232,7 +233,7 @@ def put(
         interface = utils.config().get('DEFAULT', 'interface')
 
     if not 0 <= port <= 65535:
-        raise ValueError("Port %d exceeds allowed range" % port)
+        raise ValueError(_("Port %d exceeds allowed range") % port)
 
     basename = os.path.basename(filename)
 
@@ -258,13 +259,13 @@ def put(
     port = server.server_port
 
     utils.logger.debug(
-        "Using interface %s" % interface
+        _("Using interface %s") % interface
     )
 
     utils.logger.debug(
-        "Listening on %s:%d \n"
-        "you may change address using --address and "
-        "port using --port" % (address, port)
+        _("Listening on %(a)s:%(p)d \n"
+          "you may change address using --address and "
+          "port using --port") % {'a': address, 'p': port}
     )
 
     zeroconf = Zeroconf()
@@ -272,7 +273,7 @@ def put(
     infos = []
     for filehash in filehashes:
         utils.logger.debug(
-            "Broadcasting as %s._zget._http._tcp.local." % filehash
+            _("Broadcasting as %s._zget._http._tcp.local.") % filehash
         )
         infos.append(ServiceInfo(
             "_zget._http._tcp.local.",
@@ -296,7 +297,7 @@ def put(
     if timeout is not None and not server.downloaded:
         raise utils.TimeoutException()
     else:
-        utils.logger.info("Done.")
+        utils.logger.info(_("Done."))
 
 if __name__ == '__main__':
     cli(sys.argv[1:])
