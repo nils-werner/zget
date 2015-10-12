@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 from __future__ import absolute_import, division, print_function, \
     unicode_literals
+
+import hashlib
 import os
 import sys
 import socket
@@ -48,7 +50,8 @@ class FileHandler(BaseHTTPRequestHandler):
     """
 
     def do_GET(self):
-        if self.path == '/' + self.server.token:
+        if self.path in ('/' + self.server.token,
+                         '/' + self.server.basename):
             utils.logger.info("Peer found. Uploading...")
             full_path = os.path.join(os.curdir, self.server.filename)
             with open(full_path, 'rb') as fh:
@@ -214,6 +217,7 @@ def put(
         raise ValueError("Port %d exceeds allowed range" % port)
 
     basename = os.path.basename(filename)
+    filehash = hashlib.sha1(basename.encode('utf-8')).hexdigest()
 
     broadcast_token, secret_token = utils.prepare_token(token)
     utils.logger.debug('Broadcast token:', broadcast_token)
@@ -248,13 +252,6 @@ def put(
         "Broadcasting as %s._zget._http._tcp.local." % broadcast_token
     )
 
-    info = ServiceInfo(
-        "_zget._http._tcp.local.",
-        "%s._zget._http._tcp.local." % broadcast_token,
-        socket.inet_aton(address), port, 0, 0,
-        {'path': None}
-    )
-
     if token is None:
         print(filename, 'is now available on the network')
         print("Ask your friend to 'zget %s%s'"
@@ -262,7 +259,14 @@ def put(
 
     zeroconf = Zeroconf()
     try:
-        zeroconf.register_service(info)
+        for announce_token in [broadcast_token, filehash]:
+            info = ServiceInfo(
+                "_zget._http._tcp.local.",
+                "%s._zget._http._tcp.local." % announce_token,
+                socket.inet_aton(address), port, 0, 0,
+                {'path': None}
+            )
+            zeroconf.register_service(info)
         server.handle_request()
     except KeyboardInterrupt:
         pass

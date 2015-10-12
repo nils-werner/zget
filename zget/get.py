@@ -3,7 +3,6 @@ from __future__ import absolute_import, division, print_function, \
     unicode_literals
 import os
 import sys
-import time
 import socket
 try:
     import urllib.request as urllib
@@ -11,7 +10,11 @@ except ImportError:
     import urllib
 import hashlib
 import argparse
-import logging
+
+try:
+    from queue import Queue, Empty  # Py3
+except ImportError:
+    from Queue import Queue, Empty  # Py2
 
 from zeroconf import ServiceBrowser, Zeroconf
 
@@ -26,20 +29,28 @@ class ServiceListener(object):
     for.
 
     """
-    token = ""
-    address = None
-    port = False
+    def __init__(self, token, filehash=None):
+        self.token = token
+        self.filehash = filehash
+        self.queue = Queue()
 
     def remove_service(*args):
         pass
 
     def add_service(self, zeroconf, type, name):
         if name == self.token + "._zget._http._tcp.local.":
-            utils.logger.info("Peer found. Downloading...")
-            info = zeroconf.get_service_info(type, name)
-            if info:
-                self.address = socket.inet_ntoa(info.address)
-                self.port = info.port
+            mechanism = 'token'
+        elif name == self.filehash + "._zget._http._tcp.local.":
+            mechanism = 'filehash'
+        else:
+            # Someone else's transfer - ignore it
+            return
+
+        utils.logger.info("Peer found. Downloading...")
+        info = zeroconf.get_service_info(type, name)
+        if info:
+            address = socket.inet_ntoa(info.address)
+            self.queue.put((address, info.port, mechanism))
 
 
 def cli(inargs=None):
@@ -98,7 +109,7 @@ def cli(inargs=None):
 
 
 def get(
-    token=None,
+    token_or_filename=None,
     output=None,
     reporthook=None,
     timeout=None
@@ -125,39 +136,41 @@ def get(
         When a timeout occurred.
 
     """
-    broadcast_token, secret_token = utils.prepare_token(token)
+    broadcast_token, secret_token = utils.prepare_token(token_or_filename)
     utils.logger.debug('Broadcast token:', broadcast_token)
     utils.logger.debug('Secret token:', secret_token)
 
     zeroconf = Zeroconf()
-    listener = ServiceListener()
-    listener.token = broadcast_token
+    if token_or_filename is not None:
+        filehash = hashlib.sha1(token_or_filename.encode('utf-8')).hexdigest()
+    else:
+        filehash = None
+    listener = ServiceListener(broadcast_token, filehash)
 
     utils.logger.debug("Looking for " + broadcast_token + "._zget._http._tcp.local.")
 
     browser = ServiceBrowser(zeroconf, "_zget._http._tcp.local.", listener)
 
-    if token is None:
+    if token_or_filename is None:
         print('Ready to receive a file.')
         print("Ask your friend to 'zput <filename> %s%s'"
                 % (broadcast_token, secret_token))
 
-    start_time = time.time()
     try:
-        while listener.address is None:
-            time.sleep(0.5)
-            if (
-                timeout is not None and
-                time.time() - start_time > timeout
-            ):
-                zeroconf.close()
-                raise utils.TimeoutException()
+        try:
+            address, port, mechanism = listener.queue.get(timeout=timeout)
+        except Empty:
+            zeroconf.close()
+            raise utils.TimeoutException()
 
         utils.logger.debug(
-            "Downloading from %s:%d" % (listener.address, listener.port)
+            "Downloading from %s:%d" % (address, port)
         )
-        url = "http://" + listener.address + ":" + str(listener.port) + "/" + \
-              secret_token
+        if mechanism == 'token':
+            path = secret_token
+        else:  # mechanism == 'filehash'
+            path = token_or_filename
+        url = "http://" + address + ":" + str(port) + "/" + path
 
         utils.urlretrieve(
             url, output,
