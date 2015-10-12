@@ -43,7 +43,7 @@ class StateHTTPServer(HTTPServer):
     """
     downloaded = False
     filename = ""
-    basename = ""
+    allowed_basenames = []
     reporthook = None
 
 
@@ -54,8 +54,9 @@ class FileHandler(BaseHTTPRequestHandler):
     """
 
     def do_GET(self):
-        if self.path == urllib.pathname2url(
-            os.path.join('/', self.server.basename)
+        if self.path in map(
+            lambda x: urllib.pathname2url(os.path.join('/', x)),
+            self.server.allowed_basenames
         ):
             utils.logger.info("Peer found. Uploading...")
             full_path = os.path.join(os.curdir, self.server.filename)
@@ -63,6 +64,12 @@ class FileHandler(BaseHTTPRequestHandler):
                 maxsize = os.path.getsize(full_path)
                 self.send_response(200)
                 self.send_header('Content-type', 'application/octet-stream')
+                self.send_header(
+                    'Content-disposition',
+                    'inline; filename="%s"' % os.path.basename(
+                        self.server.filename
+                    )
+                )
                 self.send_header('Content-length', maxsize)
                 self.end_headers()
 
@@ -135,6 +142,11 @@ def cli(inargs=None):
         'input',
         help="The file to share on the network"
     )
+    parser.add_argument(
+        'output',
+        nargs='?',
+        help="The share alias on the network"
+    )
     args = parser.parse_args(inargs)
 
     utils.enable_logger(args.verbose)
@@ -150,9 +162,18 @@ def cli(inargs=None):
                 "or --interface"
             )
 
+        if args.output is None:
+            args.output = utils.generate_alias()
+
+        if not args.quiet:
+            print("Download this file using `zget %(f)s` or `zget %(o)s`" % {
+                'f': os.path.basename(args.input), 'o': args.output
+            })
+
         with utils.Progresshook(args.input) as progress:
             put(
                 args.input,
+                output=args.output,
                 interface=args.interface,
                 address=args.address,
                 port=args.port,
@@ -168,6 +189,7 @@ def cli(inargs=None):
 
 def put(
     filename,
+    output=None,
     interface=None,
     address=None,
     port=None,
@@ -180,6 +202,9 @@ def put(
     ----------
     filename : string
         The filename to be transferred
+    output : string
+        The alias to share on the network. Optional. If empty, the input
+        filename will be used.
     interface : string
         The network interface to use. Optional.
     address : string
@@ -210,7 +235,11 @@ def put(
         raise ValueError("Port %d exceeds allowed range" % port)
 
     basename = os.path.basename(filename)
-    filehash = hashlib.sha1(basename.encode('utf-8')).hexdigest()
+
+    filehashes = []
+    filehashes.append(hashlib.sha1(basename.encode('utf-8')).hexdigest())
+    if output is not None:
+        filehashes.append(hashlib.sha1(output.encode('utf-8')).hexdigest())
 
     if interface is None:
         interface = utils.default_interface()
@@ -221,7 +250,9 @@ def put(
     server = StateHTTPServer((address, port), FileHandler)
     server.timeout = timeout
     server.filename = filename
-    server.basename = basename
+    server.allowed_basenames.append(basename)
+    if output is not None:
+        server.allowed_basenames.append(output)
     server.reporthook = reporthook
 
     port = server.server_port
@@ -236,26 +267,30 @@ def put(
         "port using --port" % (address, port)
     )
 
-    utils.logger.debug(
-        "Broadcasting as %s._zget._http._tcp.local." % filehash
-    )
-
-    info = ServiceInfo(
-        "_zget._http._tcp.local.",
-        "%s._zget._http._tcp.local." % filehash,
-        socket.inet_aton(address), port, 0, 0,
-        {'path': None}
-    )
-
     zeroconf = Zeroconf()
+
+    infos = []
+    for filehash in filehashes:
+        utils.logger.debug(
+            "Broadcasting as %s._zget._http._tcp.local." % filehash
+        )
+        infos.append(ServiceInfo(
+            "_zget._http._tcp.local.",
+            "%s._zget._http._tcp.local." % filehash,
+            socket.inet_aton(address), port, 0, 0,
+            {'path': None}
+        ))
+
     try:
-        zeroconf.register_service(info)
+        for info in infos:
+            zeroconf.register_service(info)
         server.handle_request()
     except KeyboardInterrupt:
         pass
 
     server.socket.close()
-    zeroconf.unregister_service(info)
+    for info in infos:
+        zeroconf.unregister_service(info)
     zeroconf.close()
 
     if timeout is not None and not server.downloaded:

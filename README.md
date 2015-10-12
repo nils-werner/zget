@@ -71,6 +71,24 @@ Marcy then does
 Boom. Done.
 
 
+### Aliases
+
+Alternatively, in case of really complicated filenames, you can use aliases or
+have `zput` generate one for you:
+
+    $ zput LICENSE
+    Download this file using `zget LICENSE` or `zget C6P3`
+
+Also `zget` can generate an alias so you can initiate the transfer without knowing
+what file will be transferred.
+
+    $ zget
+    Upload a file using `zput <filename> YHKC`
+
+As of version 0.10 `zget` will then out the resulting filename from the transfer
+metadata.
+
+
 ### Options
 
 You may inspect the available options using
@@ -120,3 +138,18 @@ and for receiving:
     zget.get("filename", "filename_to_save_to")
 
 For more information please see the [API reference](https://zget.readthedocs.org/).
+
+
+Security Considerations
+-----------------------
+
+Neither Zeroconf nor HTTP, both technologies used in this tool, should be used
+on untrusted networks (like public WiFi at a coffee shop).
+
+Additonally, `zput` announces the filename and aliases as a simple unsalted
+SHA-1 hash on the network. This means that a malicious party could trivially
+intercept your transfers by simply generating a large enough number of hashes
+and then accepting the transfer on behalf of the desired recipient.
+
+In this case you should however notice the attack by the recipient never
+receiving a file while the sender sees an upload happening.

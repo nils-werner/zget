@@ -7,8 +7,10 @@ import time
 import socket
 try:
     import urllib.request as urllib
+    import urllib.parse as urlparse
 except ImportError:
     import urllib
+    import urlparse
 import hashlib
 import argparse
 import logging
@@ -71,6 +73,7 @@ def cli(inargs=None):
     )
     parser.add_argument(
         'filename',
+        nargs='?',
         help="The filename to look for on the network"
     )
     parser.add_argument(
@@ -82,8 +85,24 @@ def cli(inargs=None):
 
     utils.enable_logger(args.verbose)
 
+    if args.filename is None:
+        args.filename = utils.generate_alias()
+        if not args.quiet:
+            print("Upload a file using `zput <filename> %s`" % (args.filename))
+    else:
+        if not args.quiet:
+            print(
+                "Upload a file using `zput %(f)s` or `zput <filename> %(f)s`" %
+                {'f': args.filename}
+            )
+
+    if args.output is not None:
+        progname = args.output
+    else:
+        progname = args.filename
+
     try:
-        with utils.Progresshook(args.filename) as progress:
+        with utils.Progresshook(progname) as progress:
             get(
                 args.filename,
                 args.output,
@@ -127,8 +146,6 @@ def get(
     """
     basename = os.path.basename(filename)
     filehash = hashlib.sha1(basename.encode('utf-8')).hexdigest()
-    if output is None:
-        output = filename
 
     zeroconf = Zeroconf()
     listener = ServiceListener()
@@ -155,7 +172,7 @@ def get(
         url = "http://" + listener.address + ":" + str(listener.port) + "/" + \
               urllib.pathname2url(filename)
 
-        urllib.urlretrieve(
+        utils.urlretrieve(
             url, output,
             reporthook=reporthook
         )
