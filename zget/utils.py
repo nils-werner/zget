@@ -4,6 +4,7 @@ import os
 import netifaces
 import logging
 import progressbar
+import random
 import re
 import requests
 try:
@@ -152,6 +153,7 @@ def ip_addr(interface):
     except KeyError:
         raise ValueError("You have selected an invalid interface")
 
+
 def unique_filename(filename, limit=maxsize):
     if not os.path.exists(filename):
         return filename
@@ -204,3 +206,19 @@ def urlretrieve(
                 f.write(chunk)
                 if reporthook is not None:
                     reporthook(i, 1024 * 8, maxsize)
+
+
+def prepare_token(given_token, length=4):
+    if given_token is None:
+        # Generate a new random token
+        # This is the same alphabet used in Douglas Crockford's base32 variant
+        alphabet = '0123456789ABCDEFGHJKMNPQRSTVWXYZ'
+        token = ''.join(random.choice(alphabet) for _ in range(length))
+    else:
+        # Normalise the token
+        token = given_token.upper().replace('I', '1').replace('L', '1')\
+                .replace('O', '0')
+
+    # Split it into the broadcast part and the secret part
+    _split_ix = len(token)//2
+    return token[:_split_ix], token[_split_ix:]

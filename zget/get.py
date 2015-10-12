@@ -26,7 +26,7 @@ class ServiceListener(object):
     for.
 
     """
-    filehash = ""
+    token = ""
     address = None
     port = False
 
@@ -34,7 +34,7 @@ class ServiceListener(object):
         pass
 
     def add_service(self, zeroconf, type, name):
-        if name == self.filehash + "._zget._http._tcp.local.":
+        if name == self.token + "._zget._http._tcp.local.":
             utils.logger.info("Peer found. Downloading...")
             info = zeroconf.get_service_info(type, name)
             if info:
@@ -70,8 +70,8 @@ def cli(inargs=None):
         version='%%(prog)s %s' % utils.__version__
     )
     parser.add_argument(
-        'filename',
-        help="The filename to look for on the network"
+        'token', nargs='?',
+        help="The token to look for on the network, if zput was already started"
     )
     parser.add_argument(
         'output',
@@ -83,9 +83,9 @@ def cli(inargs=None):
     utils.enable_logger(args.verbose)
 
     try:
-        with utils.Progresshook(args.filename) as progress:
+        with utils.Progresshook() as progress:
             get(
-                args.filename,
+                args.token,
                 args.output,
                 reporthook=progress if args.quiet == 0 else None,
                 timeout=args.timeout
@@ -98,7 +98,7 @@ def cli(inargs=None):
 
 
 def get(
-    filename,
+    token=None,
     output=None,
     reporthook=None,
     timeout=None
@@ -125,16 +125,22 @@ def get(
         When a timeout occurred.
 
     """
-    basename = os.path.basename(filename)
-    filehash = hashlib.sha1(basename.encode('utf-8')).hexdigest()
+    broadcast_token, secret_token = utils.prepare_token(token)
+    utils.logger.debug('Broadcast token:', broadcast_token)
+    utils.logger.debug('Secret token:', secret_token)
 
     zeroconf = Zeroconf()
     listener = ServiceListener()
-    listener.filehash = filehash
+    listener.token = broadcast_token
 
-    utils.logger.debug("Looking for " + filehash + "._zget._http._tcp.local.")
+    utils.logger.debug("Looking for " + broadcast_token + "._zget._http._tcp.local.")
 
     browser = ServiceBrowser(zeroconf, "_zget._http._tcp.local.", listener)
+
+    if token is None:
+        print('Ready to receive a file.')
+        print("Ask your friend to 'zput <filename> %s%s'"
+                % (broadcast_token, secret_token))
 
     start_time = time.time()
     try:
@@ -151,7 +157,7 @@ def get(
             "Downloading from %s:%d" % (listener.address, listener.port)
         )
         url = "http://" + listener.address + ":" + str(listener.port) + "/" + \
-              urllib.pathname2url(filename)
+              secret_token
 
         utils.urlretrieve(
             url, output,

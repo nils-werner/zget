@@ -3,15 +3,8 @@ from __future__ import absolute_import, division, print_function, \
     unicode_literals
 import os
 import sys
-import time
 import socket
-try:
-    import urllib.request as urllib
-except ImportError:
-    import urllib
-import hashlib
 import argparse
-import logging
 
 from zeroconf import ServiceInfo, Zeroconf
 try:
@@ -42,6 +35,7 @@ class StateHTTPServer(HTTPServer):
     that file has been transferred using :class:`FileHandler`
     """
     downloaded = False
+    secret_token = ""
     filename = ""
     basename = ""
     reporthook = None
@@ -54,9 +48,7 @@ class FileHandler(BaseHTTPRequestHandler):
     """
 
     def do_GET(self):
-        if self.path == urllib.pathname2url(
-            os.path.join('/', self.server.basename)
-        ):
+        if self.path == '/' + self.server.token:
             utils.logger.info("Peer found. Uploading...")
             full_path = os.path.join(os.curdir, self.server.filename)
             with open(full_path, 'rb') as fh:
@@ -141,6 +133,10 @@ def cli(inargs=None):
         'input',
         help="The file to share on the network"
     )
+    parser.add_argument(
+        'token', nargs='?',
+        help="The random token to send to, if zget was already started."
+    )
     args = parser.parse_args(inargs)
 
     utils.enable_logger(args.verbose)
@@ -159,6 +155,7 @@ def cli(inargs=None):
         with utils.Progresshook(args.input) as progress:
             put(
                 args.input,
+                token=args.token,
                 interface=args.interface,
                 address=args.address,
                 port=args.port,
@@ -174,6 +171,7 @@ def cli(inargs=None):
 
 def put(
     filename,
+    token=None,
     interface=None,
     address=None,
     port=None,
@@ -216,7 +214,10 @@ def put(
         raise ValueError("Port %d exceeds allowed range" % port)
 
     basename = os.path.basename(filename)
-    filehash = hashlib.sha1(basename.encode('utf-8')).hexdigest()
+
+    broadcast_token, secret_token = utils.prepare_token(token)
+    utils.logger.debug('Broadcast token:', broadcast_token)
+    utils.logger.debug('Secret token:', secret_token)
 
     if interface is None:
         interface = utils.default_interface()
@@ -226,6 +227,7 @@ def put(
 
     server = StateHTTPServer((address, port), FileHandler)
     server.timeout = timeout
+    server.token = secret_token
     server.filename = filename
     server.basename = basename
     server.reporthook = reporthook
@@ -243,15 +245,20 @@ def put(
     )
 
     utils.logger.debug(
-        "Broadcasting as %s._zget._http._tcp.local." % filehash
+        "Broadcasting as %s._zget._http._tcp.local." % broadcast_token
     )
 
     info = ServiceInfo(
         "_zget._http._tcp.local.",
-        "%s._zget._http._tcp.local." % filehash,
+        "%s._zget._http._tcp.local." % broadcast_token,
         socket.inet_aton(address), port, 0, 0,
         {'path': None}
     )
+
+    if token is None:
+        print(filename, 'is now available on the network')
+        print("Ask your friend to 'zget %s%s'"
+                % (broadcast_token, secret_token))
 
     zeroconf = Zeroconf()
     try:
