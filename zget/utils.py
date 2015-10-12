@@ -1,12 +1,21 @@
+import errno
 import sys
 import os
 import netifaces
 import logging
 import progressbar
+import re
+import requests
 try:
     import configparser
+    import urllib.parse as urlparse
+    xrange = range
+    maxsize = sys.maxsize
 except ImportError:
     import ConfigParser as configparser
+    import urlparse
+    maxsize = sys.maxint
+
 
 logger = logging.getLogger('zget')
 
@@ -142,3 +151,56 @@ def ip_addr(interface):
         return netifaces.ifaddresses(interface)[netifaces.AF_INET][0]['addr']
     except KeyError:
         raise ValueError("You have selected an invalid interface")
+
+def unique_filename(filename, limit=maxsize):
+    if not os.path.exists(filename):
+        return filename
+
+    path, name = os.path.split(filename)
+    name, ext = os.path.splitext(name)
+
+    def make_filename(i):
+        return os.path.join(path, '%s_%d%s' % (name, i, ext))
+
+    for i in xrange(1, limit):
+        unique_filename = make_filename(i)
+        if not os.path.exists(unique_filename):
+            return unique_filename
+
+    try:
+        raise FileExistsError()
+    except NameError:
+        raise IOError(errno.EEXIST)
+
+
+def urlretrieve(
+    url,
+    output=None,
+    reporthook=None
+):
+    r = requests.get(url, stream=True)
+    try:
+        maxsize = int(r.headers['content-length'])
+    except KeyError:
+        maxsize = -1
+
+    if output is None:
+        try:
+            filename = re.findall(
+                "filename=(\S+)", r.headers['content-disposition']
+            )[0].strip('\'"')
+        except (IndexError, KeyError):
+            filename = urlparse.unquote(
+                os.path.basename(urlparse.urlparse(url).path)
+            )
+        filename = unique_filename(filename)
+        reporthook.filename = filename
+    else:
+        filename = output
+
+    with open(filename, 'wb') as f:
+        for i, chunk in enumerate(r.iter_content(chunk_size=1024 * 8)):
+            if chunk:
+                f.write(chunk)
+                if reporthook is not None:
+                    reporthook(i, 1024 * 8, maxsize)

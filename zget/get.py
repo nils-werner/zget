@@ -127,8 +127,6 @@ def get(
     """
     basename = os.path.basename(filename)
     filehash = hashlib.sha1(basename.encode('utf-8')).hexdigest()
-    if output is None:
-        output = filename
 
     zeroconf = Zeroconf()
     listener = ServiceListener()
@@ -155,7 +153,7 @@ def get(
         url = "http://" + listener.address + ":" + str(listener.port) + "/" + \
               urllib.pathname2url(filename)
 
-        urllib.urlretrieve(
+        utils.urlretrieve(
             url, output,
             reporthook=reporthook
         )

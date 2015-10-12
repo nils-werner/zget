@@ -63,6 +63,12 @@ class FileHandler(BaseHTTPRequestHandler):
                 maxsize = os.path.getsize(full_path)
                 self.send_response(200)
                 self.send_header('Content-type', 'application/octet-stream')
+                self.send_header(
+                    'Content-disposition',
+                    'inline; filename="%s"' % os.path.basename(
+                        self.server.filename
+                    )
+                )
                 self.send_header('Content-length', maxsize)
                 self.end_headers()
 
