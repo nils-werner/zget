@@ -7,6 +7,10 @@ import os
 import sys
 import socket
 import argparse
+try:
+    from urllib.parse import unquote  # Py3
+except ImportError:
+    from urllib import unquote  # Py2
 
 from zeroconf import ServiceInfo, Zeroconf
 try:
@@ -50,8 +54,8 @@ class FileHandler(BaseHTTPRequestHandler):
     """
 
     def do_GET(self):
-        if self.path in ('/' + self.server.token,
-                         '/' + self.server.basename):
+        if unquote(self.path) in ('/' + self.server.token,
+                                  '/' + self.server.basename):
             utils.logger.info("Peer found. Uploading...")
             full_path = os.path.join(os.curdir, self.server.filename)
             with open(full_path, 'rb') as fh:
