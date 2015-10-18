@@ -1,13 +1,8 @@
 #!/usr/bin/env python
 from __future__ import absolute_import, division, print_function, \
     unicode_literals
-import os
 import sys
 import socket
-try:
-    import urllib.request as urllib
-except ImportError:
-    import urllib
 import hashlib
 import argparse
 
