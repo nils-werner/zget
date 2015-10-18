@@ -218,9 +218,10 @@ def prepare_token(given_token, length=4):
         alphabet = '0123456789ABCDEFGHJKMNPQRSTVWXYZ'
         token = ''.join(random.choice(alphabet) for _ in range(length))
     else:
-        # Normalise the token
-        token = given_token.upper().replace('I', '1').replace('L', '1')\
-                .replace('O', '0')
+        # I think similar looking characters (Il1, O0) in the token should be
+        # normalised here; the alphabet is chosen to allow that. But Nils
+        # doesn't like this. -TK
+        token = given_token
 
     # Split it into the broadcast part and the secret part
     _split_ix = len(token)//2
