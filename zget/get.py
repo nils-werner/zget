@@ -166,8 +166,10 @@ def get(
             "Downloading from %s:%d" % (address, port)
         )
         if mechanism == 'token':
+            utils.logger.debug('Requesting using token')
             path = secret_token
         else:  # mechanism == 'filehash'
+            utils.logger.debug('Requesting using filename')
             path = token_or_filename
         url = "http://" + address + ":" + str(port) + "/" + path
 
