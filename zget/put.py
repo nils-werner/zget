@@ -187,6 +187,9 @@ def put(
     ----------
     filename : string
         The filename to be transferred
+    token : string
+        The token from zget to co-ordinate the transfer. If not given, a token
+        will be generated and printed to use with zget. Optional.
     interface : string
         The network interface to use. Optional.
     address : string

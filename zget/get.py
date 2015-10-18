@@ -119,8 +119,10 @@ def get(
 
     Parameters
     ----------
-    filename : string
-        The filename to be transferred
+    token_or_filename : string
+        The token from zput, or the filename to be transferred. If not given,
+        a random token will be generated and printed to use with zput.
+        Optional.
     output : string
         The filename to save to. Optional.
     reporthook : callable
