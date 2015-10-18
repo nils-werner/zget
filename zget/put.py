@@ -255,7 +255,7 @@ def put(
     if token is None:
         print(filename, 'is now available on the network')
         print("Ask your friend to 'zget %s%s'"
-                % (broadcast_token, secret_token))
+              % (broadcast_token, secret_token))
 
     zeroconf = Zeroconf()
     try:

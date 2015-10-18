@@ -82,7 +82,8 @@ def cli(inargs=None):
     )
     parser.add_argument(
         'token', nargs='?',
-        help="The token to look for on the network, if zput was already started"
+        help=("The token to look for on the network, if zput was already"
+              "started")
     )
     parser.add_argument(
         'output',
@@ -147,14 +148,15 @@ def get(
         filehash = None
     listener = ServiceListener(broadcast_token, filehash)
 
-    utils.logger.debug("Looking for " + broadcast_token + "._zget._http._tcp.local.")
+    utils.logger.debug("Looking for " + broadcast_token +
+                       "._zget._http._tcp.local.")
 
     browser = ServiceBrowser(zeroconf, "_zget._http._tcp.local.", listener)
 
     if token_or_filename is None:
         print('Ready to receive a file.')
         print("Ask your friend to 'zput <filename> %s%s'"
-                % (broadcast_token, secret_token))
+              % (broadcast_token, secret_token))
 
     try:
         try:
