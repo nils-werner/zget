@@ -28,3 +28,11 @@ zget -t 3 LICENSE /dev/null
 
 zput -vv -q -t 3 "tests/filename with spaces" &
 zget -vv -q -t 3 "filename with spaces" /dev/null
+
+# In normal use tokens would be automatically generated, but specifying them
+# manually exercises the same code.
+zput "tests/filename with spaces" T0KN &
+cd `mktemp -d`
+zget T0KN
+ls
+test -f "filename with spaces"

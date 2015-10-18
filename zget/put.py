@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 from __future__ import absolute_import, division, print_function, \
     unicode_literals
+
+import hashlib
 import os
 import sys
-import time
 import socket
-try:
-    import urllib.request as urllib
-except ImportError:
-    import urllib
-import hashlib
 import argparse
-import logging
+try:
+    from urllib.parse import unquote  # Py3
+except ImportError:
+    from urllib import unquote  # Py2
 
 from zeroconf import ServiceInfo, Zeroconf
 try:
@@ -42,6 +41,8 @@ class StateHTTPServer(HTTPServer):
     that file has been transferred using :class:`FileHandler`
     """
     downloaded = False
+    secret_token = ""
+    complete_token = ""
     filename = ""
     basename = ""
     reporthook = None
@@ -54,15 +55,24 @@ class FileHandler(BaseHTTPRequestHandler):
     """
 
     def do_GET(self):
-        if self.path == urllib.pathname2url(
-            os.path.join('/', self.server.basename)
-        ):
+        if unquote(self.path) in ('/' + self.server.token,
+                                  # Check against the complete token for
+                                  # compatibility with older versions of zget,
+                                  # which expect the hash of the filename.
+                                  '/' + self.server.complete_token,
+                                  '/' + self.server.basename):
             utils.logger.info("Peer found. Uploading...")
             full_path = os.path.join(os.curdir, self.server.filename)
             with open(full_path, 'rb') as fh:
                 maxsize = os.path.getsize(full_path)
                 self.send_response(200)
                 self.send_header('Content-type', 'application/octet-stream')
+                self.send_header(
+                    'Content-disposition',
+                    'inline; filename="%s"' % os.path.basename(
+                        self.server.filename
+                    )
+                )
                 self.send_header('Content-length', maxsize)
                 self.end_headers()
 
@@ -78,6 +88,7 @@ class FileHandler(BaseHTTPRequestHandler):
             self.server.downloaded = True
 
         else:
+            utils.logger.info('Request path: %r', self.path)
             self.send_response(404)
             self.end_headers()
             raise RuntimeError("Invalid request received. Aborting.")
@@ -135,6 +146,10 @@ def cli(inargs=None):
         'input',
         help="The file to share on the network"
     )
+    parser.add_argument(
+        'token', nargs='?',
+        help="The random token to send to, if zget was already started."
+    )
     args = parser.parse_args(inargs)
 
     utils.enable_logger(args.verbose)
@@ -153,6 +168,7 @@ def cli(inargs=None):
         with utils.Progresshook(args.input) as progress:
             put(
                 args.input,
+                token=args.token,
                 interface=args.interface,
                 address=args.address,
                 port=args.port,
@@ -162,12 +178,13 @@ def cli(inargs=None):
     except Exception as e:
         if args.verbose:
             raise
-        utils.logger.error(e.message)
+        utils.logger.error("%s", e)
         sys.exit(1)
 
 
 def put(
     filename,
+    token=None,
     interface=None,
     address=None,
     port=None,
@@ -180,6 +197,9 @@ def put(
     ----------
     filename : string
         The filename to be transferred
+    token : string
+        The token from zget to co-ordinate the transfer. If not given, a token
+        will be generated and printed to use with zget. Optional.
     interface : string
         The network interface to use. Optional.
     address : string
@@ -212,6 +232,10 @@ def put(
     basename = os.path.basename(filename)
     filehash = hashlib.sha1(basename.encode('utf-8')).hexdigest()
 
+    broadcast_token, secret_token = utils.prepare_token(token)
+    utils.logger.debug('Broadcast token: %s', broadcast_token)
+    utils.logger.debug('Secret token: %s', secret_token)
+
     if interface is None:
         interface = utils.default_interface()
 
@@ -220,6 +244,10 @@ def put(
 
     server = StateHTTPServer((address, port), FileHandler)
     server.timeout = timeout
+    server.token = secret_token
+    # We respond to the full token so recipients with older versions of zget
+    # can listen for the hash of the token.
+    server.complete_token = broadcast_token + secret_token
     server.filename = filename
     server.basename = basename
     server.reporthook = reporthook
@@ -237,19 +265,29 @@ def put(
     )
 
     utils.logger.debug(
-        "Broadcasting as %s._zget._http._tcp.local." % filehash
+        "Broadcasting as %s._zget._http._tcp.local." % broadcast_token
     )
 
-    info = ServiceInfo(
-        "_zget._http._tcp.local.",
-        "%s._zget._http._tcp.local." % filehash,
-        socket.inet_aton(address), port, 0, 0,
-        {'path': None}
-    )
+    if token is None:
+        print(filename, 'is now available on the network')
+        print("Ask your friend to 'zget %s%s'"
+              % (broadcast_token, secret_token))
+
+    # We broadcast the token hash for now, for compatibility with older
+    # versions of zget, which only look for the hash of the 'filename'.
+    tokenhash = hashlib.sha1((broadcast_token + secret_token).encode('utf-8')
+                             ).hexdigest()
 
     zeroconf = Zeroconf()
     try:
-        zeroconf.register_service(info)
+        for announce_token in [broadcast_token, filehash, tokenhash]:
+            info = ServiceInfo(
+                "_zget._http._tcp.local.",
+                "%s._zget._http._tcp.local." % announce_token,
+                socket.inet_aton(address), port, 0, 0,
+                {'path': None}
+            )
+            zeroconf.register_service(info)
         server.handle_request()
     except KeyboardInterrupt:
         pass

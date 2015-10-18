@@ -35,6 +35,7 @@ Done.""",
             'zeroconf',
             'netifaces',
             'progressbar2',
+            'requests',
         ],
 
         extras_require={
