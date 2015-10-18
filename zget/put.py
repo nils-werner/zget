@@ -42,6 +42,7 @@ class StateHTTPServer(HTTPServer):
     """
     downloaded = False
     secret_token = ""
+    complete_token = ""
     filename = ""
     basename = ""
     reporthook = None
@@ -55,6 +56,10 @@ class FileHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if unquote(self.path) in ('/' + self.server.token,
+                                  # Check against the complete token for
+                                  # compatibility with older versions of zget,
+                                  # which expect the hash of the filename.
+                                  '/' + self.server.complete_token,
                                   '/' + self.server.basename):
             utils.logger.info("Peer found. Uploading...")
             full_path = os.path.join(os.curdir, self.server.filename)
@@ -240,6 +245,7 @@ def put(
     server = StateHTTPServer((address, port), FileHandler)
     server.timeout = timeout
     server.token = secret_token
+    server.complete_token = broadcast_token + secret_token
     server.filename = filename
     server.basename = basename
     server.reporthook = reporthook
@@ -265,9 +271,14 @@ def put(
         print("Ask your friend to 'zget %s%s'"
               % (broadcast_token, secret_token))
 
+    # We broadcast the token hash for now, for compatibility with older
+    # versions of zget, which only look for the hash of the 'filename'.
+    tokenhash = hashlib.sha1((broadcast_token + secret_token).encode('utf-8')
+                             ).hexdigest()
+
     zeroconf = Zeroconf()
     try:
-        for announce_token in [broadcast_token, filehash]:
+        for announce_token in [broadcast_token, filehash, tokenhash]:
             info = ServiceInfo(
                 "_zget._http._tcp.local.",
                 "%s._zget._http._tcp.local." % announce_token,
