@@ -79,6 +79,7 @@ class FileHandler(BaseHTTPRequestHandler):
             self.server.downloaded = True
 
         else:
+            utils.logger.info('Request path: %r', self.path)
             self.send_response(404)
             self.end_headers()
             raise RuntimeError("Invalid request received. Aborting.")
@@ -168,7 +169,7 @@ def cli(inargs=None):
     except Exception as e:
         if args.verbose:
             raise
-        utils.logger.error(e.message)
+        utils.logger.error("%s", e)
         sys.exit(1)
 
 

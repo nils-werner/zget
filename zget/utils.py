@@ -181,6 +181,7 @@ def urlretrieve(
     reporthook=None
 ):
     r = requests.get(url, stream=True)
+    r.raise_for_status()
     try:
         maxsize = int(r.headers['content-length'])
     except KeyError:

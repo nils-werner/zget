@@ -100,7 +100,7 @@ def cli(inargs=None):
     except Exception as e:
         if args.verbose:
             raise
-        utils.logger.error(e.message)
+        utils.logger.error("%s", e)
         sys.exit(1)
 
 
