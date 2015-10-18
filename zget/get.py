@@ -135,8 +135,8 @@ def get(
 
     """
     broadcast_token, secret_token = utils.prepare_token(token_or_filename)
-    utils.logger.debug('Broadcast token:', broadcast_token)
-    utils.logger.debug('Secret token:', secret_token)
+    utils.logger.debug('Broadcast token: %s', broadcast_token)
+    utils.logger.debug('Secret token: %s', secret_token)
 
     zeroconf = Zeroconf()
     if token_or_filename is not None:

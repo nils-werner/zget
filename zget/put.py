@@ -223,8 +223,8 @@ def put(
     filehash = hashlib.sha1(basename.encode('utf-8')).hexdigest()
 
     broadcast_token, secret_token = utils.prepare_token(token)
-    utils.logger.debug('Broadcast token:', broadcast_token)
-    utils.logger.debug('Secret token:', secret_token)
+    utils.logger.debug('Broadcast token: %s', broadcast_token)
+    utils.logger.debug('Secret token: %s', secret_token)
 
     if interface is None:
         interface = utils.default_interface()
