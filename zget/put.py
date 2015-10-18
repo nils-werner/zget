@@ -245,6 +245,8 @@ def put(
     server = StateHTTPServer((address, port), FileHandler)
     server.timeout = timeout
     server.token = secret_token
+    # We respond to the full token so recipients with older versions of zget
+    # can listen for the hash of the token.
     server.complete_token = broadcast_token + secret_token
     server.filename = filename
     server.basename = basename
