@@ -149,7 +149,11 @@ def default_interface():
     socket.gethostbyname(socket.gethostname()),
     so we're attempting to get a kind of valid hostname here.
     """
-    return netifaces.gateways()['default'][netifaces.AF_INET][1]
+    try:
+        return netifaces.gateways()['default'][netifaces.AF_INET][1]
+    except KeyError:
+        # Sometimes 'default' is empty but AF_INET exists alongside it
+        return netifaces.gateways()[netifaces.AF_INET][0][1]
 
 
 def ip_addr(interface):
