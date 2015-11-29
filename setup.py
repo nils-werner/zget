@@ -52,6 +52,9 @@ Done.""",
         ],
 
         extras_require={
+            'crypto': [
+                'cryptography',
+            ],
             'docs': [
                 'sphinx',
                 'sphinxcontrib-napoleon',
@@ -59,6 +62,7 @@ Done.""",
                 'numpydoc',
             ],
             'tests': [
+                'cryptography',
                 'pytest',
                 'pytest-cov',
                 'pytest-pep8',

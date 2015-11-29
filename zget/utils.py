@@ -186,8 +186,14 @@ def unique_filename(filename, limit=999):
 def urlretrieve(
     url,
     output=None,
-    reporthook=None
+    reporthook=None,
+    ciphersuite=None,
 ):
+    from . import crypto
+
+    if ciphersuite is None:
+        ciphersuite = crypto.bypass.decrypt()
+
     r = requests.get(url, stream=True)
     try:
         maxsize = int(r.headers['content-length'])
@@ -212,9 +218,10 @@ def urlretrieve(
         with open(filename, 'wb') as f:
             for i, chunk in enumerate(r.iter_content(chunk_size=1024 * 8)):
                 if chunk:
-                    f.write(chunk)
+                    f.write(ciphersuite.process(chunk))
                     if reporthook is not None:
                         reporthook(i, 1024 * 8, maxsize)
+            f.write(ciphersuite.finalize())
     except Exception as e:
         silentremove(filename)
         raise

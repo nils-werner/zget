@@ -12,6 +12,8 @@ import logging
 from zeroconf import ServiceBrowser, Zeroconf
 
 from . import utils
+from . import crypto
+
 from .utils import _
 import argparse
 
@@ -63,6 +65,11 @@ def cli(inargs=None):
         help=_("Set timeout after which program aborts transfer")
     )
     parser.add_argument(
+        '--password', '-p',
+        metavar=_("PASSWORD"),
+        help=_("Password for transfer encryption")
+    )
+    parser.add_argument(
         '--version', '-V',
         action='version',
         version='%%(prog)s %s' % utils.__version__
@@ -80,6 +87,16 @@ def cli(inargs=None):
     args = parser.parse_args(inargs)
 
     utils.enable_logger(args.verbose)
+
+    if args.password is not None:
+        try:
+            ciphersuite = crypto.aes.decrypt(args.password)
+        except ImportError:
+            raise ImportError(_(
+                "Could not load cipher suite. Did you install cryptography?"
+            ))
+    else:
+        ciphersuite = crypto.bypass.decrypt()
 
     if args.filename is None:
         args.filename = utils.generate_alias()
@@ -104,7 +121,8 @@ def cli(inargs=None):
                 args.filename,
                 args.output,
                 reporthook=progress if args.quiet == 0 else None,
-                timeout=args.timeout
+                timeout=args.timeout,
+                ciphersuite=ciphersuite,
             )
     except Exception as e:
         if args.verbose:
@@ -121,7 +139,8 @@ def get(
     filename,
     output=None,
     reporthook=None,
-    timeout=None
+    timeout=None,
+    ciphersuite=None,
 ):
     """Receive and save a file using the zget protocol.
 
@@ -145,6 +164,9 @@ def get(
         When a timeout occurred.
 
     """
+    if ciphersuite is None:
+        ciphersuite = crypto.bypass.decrypt()
+
     basename = os.path.basename(filename)
     filehash = hashlib.sha1(basename.encode('utf-8')).hexdigest()
 
@@ -176,7 +198,8 @@ def get(
 
         utils.urlretrieve(
             url, output,
-            reporthook=reporthook
+            reporthook=reporthook,
+            ciphersuite=ciphersuite,
         )
     except KeyboardInterrupt:
         pass

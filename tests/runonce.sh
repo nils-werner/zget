@@ -23,7 +23,7 @@ for LANG in "${LANGS[@]}"; do
     zget -vv -q -t 10 LICENSE recv_LICENSE
     md5sum -c tests/md5sum
 
-    zput -vv -q -t 10 -p 8808 LICENSE &
+    zput -vv -q -t 10 -P 8808 LICENSE &
     zget -vv -q -t 10 LICENSE recv_LICENSE
     md5sum -c tests/md5sum
 
@@ -34,6 +34,10 @@ for LANG in "${LANGS[@]}"; do
     zput -t 10 LICENSE &
     zget -t 10 LICENSE recv_LICENSE
     md5sum -c tests/md5sum
+
+    zput -t 10 -p foobar LICENSE &
+    zget -t 10 -p foobar LICENSE recv_LICENSE
+    eval $md5 -c tests/md5sum
 
     zput -vv -q -t 10 "tests/filename with spaces" &
     zget -vv -q -t 10 "filename with spaces" recv_LICENSE
