@@ -62,6 +62,7 @@ Done.""",
                 'pytest-cov',
                 'pytest-pep8',
                 'tox',
+                'enum34>=1.1.1', # otherwise Python 3.5 tox fails
             ],
         },
 
@@ -70,6 +71,7 @@ Done.""",
             'pytest-cov',
             'pytest-pep8',
             'tox',
+            'enum34>=1.1.1', # otherwise Python 3.5 tox fails
         ],
 
         classifiers=[
