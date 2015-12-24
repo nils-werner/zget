@@ -216,12 +216,13 @@ def urlretrieve(
 
     try:
         with open(filename, 'wb') as f:
-            for i, chunk in enumerate(r.iter_content(chunk_size=1024 * 8)):
+            for i, chunk in enumerate(
+                ciphersuite(r.iter_content(chunk_size=1024 * 8))
+            ):
                 if chunk:
-                    f.write(ciphersuite.process(chunk))
+                    f.write(chunk)
                     if reporthook is not None:
                         reporthook(i, 1024 * 8, maxsize)
-            f.write(ciphersuite.finalize())
     except Exception as e:
         silentremove(filename)
         raise
@@ -237,3 +238,12 @@ def silentremove(filename):
 def generate_alias(length=4):
     alphabet = '23456789ABCDEFGHJKMNPQRSTVWXYZ'
     return ''.join(random.choice(alphabet) for _ in range(length))
+
+
+def iter_content(fh, chunksize=1024 * 8):
+    while True:
+        chunk = fh.read(chunksize)
+        if chunk:
+            yield chunk
+        else:
+            break

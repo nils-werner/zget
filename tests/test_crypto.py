@@ -1,4 +1,4 @@
-from zget import crypto
+from zget import crypto, utils
 
 from six import BytesIO
 import random
@@ -39,20 +39,12 @@ def test_invertibility(size, suite, payload):
     cipher = suite.encrypt("mykey")
     decipher = suite.decrypt("mykey")
 
-    while True:
-        data = infile.read(1024 * 8)  # chunksize taken from urllib
-        if not data:
-            break
-        tmpfile.write(cipher.process(data))
-    tmpfile.write(cipher.finalize())
+    for data in cipher(utils.iter_content(infile)):
+        tmpfile.write(data)
     tmpfile.seek(0)
 
-    while True:
-        data = tmpfile.read(1024 * 8)  # chunksize taken from urllib
-        if not data:
-            break
-        outfile.write(decipher.process(data))
-    outfile.write(decipher.finalize())
+    for data in decipher(utils.iter_content(tmpfile)):
+        outfile.write(data)
 
     if suite != crypto.bypass:
         assert payload != tmpfile.getvalue()
@@ -69,9 +61,7 @@ def test_encrypt(size, suite, payload):
     infile.seek(0)
 
     cipher = suite.encrypt("mykey")
-    while True:
-        data = infile.read(1024 * 8)  # chunksize taken from urllib
-        if not data:
-            break
+    for data in cipher(utils.iter_content(infile)):
+        pass
 
     infile.close()

@@ -72,16 +72,12 @@ class FileHandler(BaseHTTPRequestHandler):
                 )
                 self.end_headers()
 
-                i = 0
-                while True:
-                    data = fh.read(1024 * 8)  # chunksize taken from urllib
-                    if not data:
-                        break
-                    self.wfile.write(self.server.ciphersuite.process(data))
+                for i, data in enumerate(
+                    self.server.ciphersuite(utils.iter_content(fh))
+                ):
+                    self.wfile.write(data)
                     if self.server.reporthook is not None:
                         self.server.reporthook(i, 1024 * 8, maxsize)
-                    i += 1
-                self.wfile.write(self.server.ciphersuite.finalize())
             self.server.downloaded = True
 
         else:
