@@ -1,10 +1,24 @@
 from __future__ import absolute_import, division, print_function, \
     unicode_literals
 import base64
-import hashlib
 import os
 from . import utils
 from .utils import _
+
+
+def password_derive(key):
+    from cryptography.hazmat.primitives import hashes
+    from cryptography.hazmat.primitives.kdf import pbkdf2
+    from cryptography.hazmat import backends
+
+    kdf = pbkdf2.PBKDF2HMAC(
+        algorithm=hashes.SHA256(),
+        length=16,
+        salt=b"",
+        iterations=100000,
+        backend=backends.default_backend()
+    )
+    return base64.urlsafe_b64encode(kdf.derive(key.encode('utf-8')))
 
 
 class aes:
@@ -17,7 +31,7 @@ class aes:
 
         def func(data):
             backend = backends.default_backend()
-            key = hashlib.sha256(str_key.encode('utf-8')).digest()
+            key = password_derive(str_key)
             iv = os.urandom(16)
             cipher = ciphers.Cipher(
                 ciphers.algorithms.AES(key),
@@ -51,7 +65,7 @@ class aes:
 
         def func(data):
             backend = backends.default_backend()
-            key = hashlib.sha256(str_key.encode('utf-8')).digest()
+            key = password_derive(str_key)
             iv = None
             cipher = None
             cryptor = None
