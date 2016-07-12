@@ -12,7 +12,7 @@ if __name__ == "__main__":
     setuptools.setup(
         name='zget',
 
-        version="0.10",
+        version="0.11",
 
         description='Zeroconf based peer to peer file transfer',
         long_description="""Simply transfer a file over the network using
@@ -40,7 +40,7 @@ Done.""",
         packages=setuptools.find_packages(),
 
         install_requires=[
-            'zeroconf',
+            'zeroconf<0.17.6',
             'netifaces',
             'progressbar2',
             'requests',
