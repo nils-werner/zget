@@ -41,7 +41,7 @@ Done.""",
 
         install_requires=[
             'zeroconf<0.17.6',
-            'netifaces',
+            'netifaces<0.10.5',
             'progressbar2',
             'requests',
         ],
