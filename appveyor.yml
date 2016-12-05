@@ -84,7 +84,7 @@ install:
   - "pip install --disable-pip-version-check --user --upgrade pip"
 
 build_script:
-  - "%CMD_IN_ENV% pip install -e ."
+  - "%CMD_IN_ENV% pip install -e %APPVEYOR_BUILD_FOLDER%"
 
 test_script:
-  - "%CMD_IN_ENV% py.test"
+  - "%CMD_IN_ENV% py.test %APPVEYOR_BUILD_FOLDER%"
