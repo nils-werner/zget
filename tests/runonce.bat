@@ -16,10 +16,8 @@ zget -t 10 LICENSE nul
 START "" zput -vv -q -t 10 "tests/filename with spaces"
 zget -vv -q -t 10 "filename with spaces" nul
 
-# Transfer alias, requesting file
 START "" zput -vv -q -t 10 LICENSE asd
 zget -vv -q -t 10 LICENSE nul
 
-# Transfer alias, requesting alias
 START "" zput -vv -q -t 10 LICENSE asd
 zget -vv -q -t 10 asd nul
