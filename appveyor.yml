@@ -88,3 +88,4 @@ build_script:
 
 test_script:
   - "py.test"
+  - "tests\\runonce.bat"
