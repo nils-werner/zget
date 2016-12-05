@@ -2,6 +2,7 @@ zget
 ====
 
 [![Build Status](https://travis-ci.org/nils-werner/zget.svg?branch=master)](https://travis-ci.org/nils-werner/zget)
+[![Build status](https://ci.appveyor.com/api/projects/status/6yrye1hsvw5hvx4l?svg=true)](https://ci.appveyor.com/project/nils-werner/zget)
 [![Docs Status](https://readthedocs.org/projects/zget/badge/?version=stable)](https://zget.readthedocs.org/en/stable/)
 [![Latest Version](https://img.shields.io/pypi/v/zget.svg)](https://pypi.python.org/pypi/zget/)
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/zget.svg)](https://pypi.python.org/pypi/zget/)
@@ -15,18 +16,10 @@ zget uses the fact that the filename is known to both parties as a basic authent
 
 If a match was found, a simple HTTP request is made: For transferring the file the actual filename is then requested from the sender. If this filename wasn't correct, the process is aborted.
 
-The only third party dependency is [zeroconf](https://pypi.python.org/pypi/zeroconf), a platform independent pure-Python Zeroconf implementation.
-
 Installation
 ------------
 
-    $ pip install --user zget
-
-If `zget` cannot be found afterwards you may also need to add
-
-    export PATH=$HOME/.local/bin:$PATH
-
-to your `.bashrc`.
+    $ pip install zget
 
 Usage
 -----
@@ -39,13 +32,13 @@ zget works both ways:
 
 ### Sharing
 
-To share some nice pictures do:
+To share some pictures do:
 
     $ zput my_holiday_pictures.zip
 
 then shout
 
-> Hey Tom, I am zgetting you my_holiday_pictures.zip!
+> Hey Tom, I am sending you my_holiday_pictures.zip!
 
 Tom will then do
 
@@ -56,15 +49,15 @@ Done.
 
 ### Receiving
 
-You want to have some very important annual reports from Marcy:
+You want to have some very important data from Tom:
 
     $ zget annual_reports.xlsx
 
 then shout
 
-> Hey Marcy, can you zget me annual_reports.xlsx?
+> Hey Tom, can you send me annual_reports.xlsx?
 
-Marcy then does
+Tom then does
 
     $ zput annual_reports.xlsx
 
@@ -85,8 +78,7 @@ what file will be transferred.
     $ zget
     Upload a file using `zput <filename> YHKC`
 
-As of version 0.10 `zget` will then out the resulting filename from the transfer
-metadata.
+As of version 0.10 `zget` will figure out the resulting filename from the transfer metadata, so you won't be stuck with a file `YHKC` on your computer.
 
 
 ### Options
