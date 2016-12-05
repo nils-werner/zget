@@ -82,7 +82,6 @@ install:
   - "python --version"
   - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
   - "pip install --disable-pip-version-check --user --upgrade pip"
-  - "%CMD_IN_ENV% pip install -e ."
 
 build_script:
   - "%CMD_IN_ENV% pip install -e ."
