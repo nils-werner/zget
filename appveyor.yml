@@ -84,7 +84,7 @@ install:
   - "pip install --disable-pip-version-check --upgrade pip"
 
 build_script:
-  - "pip install -e ."
+  - "pip install -e .[tests,docs]"
 
 test_script:
   - "py.test"
