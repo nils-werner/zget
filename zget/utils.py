@@ -10,10 +10,12 @@ import logging
 import progressbar
 try:
     import configparser
+    import urllib.parse as urlparse
     xrange = range
     maxsize = sys.maxsize
 except ImportError:
     import ConfigParser as configparser
+    import urlparse
     maxsize = sys.maxint
 
 t = gettext.translation(
