@@ -21,6 +21,8 @@ Installation
 
     $ pip install zget
 
+I recommend a global [`--user` installation](https://pip.pypa.io/en/stable/user_guide/#user-installs), but you may have to fix [`$PATH` issues](https://github.com/pypa/pip/issues/3813) on your platform.
+
 Usage
 -----
 
