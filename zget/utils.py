@@ -30,7 +30,7 @@ except AttributeError:
 
 logger = logging.getLogger('zget')
 
-__version__ = "0.11"
+__version__ = "0.11.1"
 
 
 class TimeoutException(Exception):
