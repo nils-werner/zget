@@ -6,7 +6,7 @@ from . import utils
 from .utils import _
 
 
-def password_derive(key):
+def password_derive(key, salt):
     from cryptography.hazmat.primitives import hashes
     from cryptography.hazmat.primitives.kdf import pbkdf2
     from cryptography.hazmat import backends
@@ -14,7 +14,7 @@ def password_derive(key):
     kdf = pbkdf2.PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=16,
-        salt=b"",
+        salt=salt,
         iterations=100000,
         backend=backends.default_backend()
     )
@@ -31,8 +31,9 @@ class aes:
 
         def func(data):
             backend = backends.default_backend()
-            key = password_derive(str_key)
+            salt = os.urandom(16)
             iv = os.urandom(16)
+            key = password_derive(str_key, salt)
             cipher = ciphers.Cipher(
                 ciphers.algorithms.AES(key),
                 ciphers.modes.CFB(iv),
@@ -45,14 +46,14 @@ class aes:
                 out = cryptor.update(raw)
 
                 if not iv_sent:
-                    out = iv + out
+                    out = iv + salt + out
                     iv_sent = True
 
                 yield out
 
             yield cryptor.finalize()
 
-        func.size = lambda x: x + 16
+        func.size = lambda x: x + 32   # iv and salt are 32 bytes
 
         return func
 
@@ -65,8 +66,9 @@ class aes:
 
         def func(data):
             backend = backends.default_backend()
-            key = password_derive(str_key)
+            key = None
             iv = None
+            salt = None
             cipher = None
             cryptor = None
 
@@ -76,7 +78,9 @@ class aes:
                         _("Initializing AES initialization vector")
                     )
                     iv = enc[:16]
-                    enc = enc[16:]
+                    salt = enc[16:32]
+                    enc = enc[32:]
+                    key = password_derive(str_key, salt)
                     cipher = ciphers.Cipher(
                         ciphers.algorithms.AES(key),
                         ciphers.modes.CFB(iv),
@@ -87,7 +91,7 @@ class aes:
 
             yield cryptor.finalize()
 
-        func.size = lambda x: x - 16
+        func.size = lambda x: x - 32   # iv and salt are 32 bytes
 
         return func
 
