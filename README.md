@@ -2,7 +2,7 @@ zget
 ====
 
 [![Build Status](https://travis-ci.org/nils-werner/zget.svg?branch=master)](https://travis-ci.org/nils-werner/zget)
-[![Build status](https://ci.appveyor.com/api/projects/status/6yrye1hsvw5hvx4l?svg=true)](https://ci.appveyor.com/project/nils-werner/zget)
+[![Build status](https://ci.appveyor.com/api/projects/status/6yrye1hsvw5hvx4l/branch/master?svg=true)](https://ci.appveyor.com/project/nils-werner/zget)
 [![Docs Status](https://readthedocs.org/projects/zget/badge/?version=stable)](https://zget.readthedocs.org/en/stable/)
 [![Latest Version](https://img.shields.io/pypi/v/zget.svg)](https://pypi.python.org/pypi/zget/)
 [![Supported Python versions](https://img.shields.io/pypi/pyversions/zget.svg)](https://pypi.python.org/pypi/zget/)
