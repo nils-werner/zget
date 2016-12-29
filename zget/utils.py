@@ -12,11 +12,9 @@ try:
     import configparser
     import urllib.parse as urlparse
     xrange = range
-    maxsize = sys.maxsize
 except ImportError:
     import ConfigParser as configparser
     import urlparse
-    maxsize = sys.maxint
 
 t = gettext.translation(
     'zget',
@@ -168,7 +166,7 @@ def ip_addr(interface):
         raise ValueError(_("You have selected an invalid interface"))
 
 
-def unique_filename(filename, limit=maxsize):
+def unique_filename(filename, limit=999):
     if not os.path.exists(filename):
         return filename
 
