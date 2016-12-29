@@ -1,3 +1,5 @@
+@ECHO ON
+
 START "" zput -vv -q -t 10 LICENSE
 zget -vv -q -t 10 LICENSE nul
 
@@ -21,3 +23,5 @@ zget -vv -q -t 10 LICENSE nul
 
 START "" zput -vv -q -t 10 LICENSE asd
 zget -vv -q -t 10 asd nul
+
+@ECHO OFF
