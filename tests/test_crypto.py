@@ -4,6 +4,7 @@ from six import BytesIO
 import random
 import string
 import pytest
+import cryptography.exceptions
 
 
 @pytest.fixture(params=[
@@ -63,8 +64,13 @@ def test_invertibility(size, suite, payload, corrupt):
         tmpfile.write("garbage")
         tmpfile.seek(0)
 
-    for data in decipher(utils.iter_content(tmpfile)):
-        outfile.write(data)
+    if corrupt and suite != crypto.bypass:
+        with pytest.raises(cryptography.exceptions.InvalidSignature):
+            for data in decipher(utils.iter_content(tmpfile)):
+                outfile.write(data)
+    else:
+        for data in decipher(utils.iter_content(tmpfile)):
+            outfile.write(data)
 
     if suite != crypto.bypass:
         assert payload != tmpfile.getvalue()

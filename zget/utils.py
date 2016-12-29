@@ -5,6 +5,7 @@ import errno
 import random
 import requests
 import netifaces
+import itertools
 import gettext
 import logging
 import progressbar
@@ -247,3 +248,28 @@ def iter_content(fh, chunksize=1024 * 8):
             yield chunk
         else:
             break
+
+
+def minimum_chunksize(data, minlength=32):
+    """
+    Merge the last two elements of an iterable,
+    if the last element is too short. This is needed for the decryptor to
+    successfully read the entire signature of the HMAC.
+    """
+    for d, n in pairwise(data):
+        if n is not None and len(n) < minlength:
+            yield d + n
+            raise StopIteration
+        else:
+            yield d
+
+
+def pairwise(iterable):
+    """
+    Return pairs of an iterator
+
+    s -> (s0,s1), (s1,s2), (s2, s3), ...
+    """
+    a, b = itertools.tee(iterable)
+    next(b, None)
+    return itertools.izip_longest(a, b)

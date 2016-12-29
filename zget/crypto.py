@@ -1,5 +1,6 @@
 from __future__ import absolute_import, division, print_function, \
     unicode_literals
+import itertools
 import base64
 import os
 from . import utils
@@ -26,7 +27,7 @@ class aes:
     def encrypt(str_key):
         utils.logger.debug(_("Initializing AES encryptor"))
 
-        from cryptography.hazmat.primitives import ciphers
+        from cryptography.hazmat.primitives import ciphers, hmac, hashes
         from cryptography.hazmat import backends
 
         def func(data):
@@ -34,6 +35,11 @@ class aes:
             salt = os.urandom(16)
             iv = os.urandom(16)
             key = password_derive(str_key, salt)
+            h = hmac.HMAC(
+                key,
+                hashes.SHA256(),
+                backend=backend
+            )
             cipher = ciphers.Cipher(
                 ciphers.algorithms.AES(key),
                 ciphers.modes.CTR(iv),
@@ -44,6 +50,7 @@ class aes:
 
             for raw in data:
                 out = cryptor.update(raw)
+                h.update(out)
 
                 if not iv_sent:
                     out = iv + salt + out
@@ -51,9 +58,14 @@ class aes:
 
                 yield out
 
-            yield cryptor.finalize()
+            out = cryptor.finalize()
+            h.update(out)
+            yield out
 
-        func.size = lambda x: x + 32   # iv and salt are 32 bytes
+            signature = h.finalize()
+            yield signature
+
+        func.size = lambda x: x + 64   # iv, salt and signature are 64 bytes
 
         return func
 
@@ -61,7 +73,7 @@ class aes:
     def decrypt(str_key):
         utils.logger.debug(_("Initializing AES decryptor"))
 
-        from cryptography.hazmat.primitives import ciphers
+        from cryptography.hazmat.primitives import ciphers, hmac, hashes
         from cryptography.hazmat import backends
 
         def func(data):
@@ -72,7 +84,9 @@ class aes:
             cipher = None
             cryptor = None
 
-            for enc in data:
+            # ensure minimum chunksize of 32 so we can easily read signature
+            # iterate pairwise to detect last chunk and verify HMAC
+            for enc, nextenc in utils.pairwise(utils.minimum_chunksize(data)):
                 if iv is None:
                     utils.logger.debug(
                         _("Initializing AES initialization vector")
@@ -81,17 +95,31 @@ class aes:
                     salt = enc[16:32]
                     enc = enc[32:]
                     key = password_derive(str_key, salt)
+                    h = hmac.HMAC(
+                        key,
+                        hashes.SHA256(),
+                        backend=backend
+                    )
                     cipher = ciphers.Cipher(
                         ciphers.algorithms.AES(key),
                         ciphers.modes.CTR(iv),
                         backend=backend,
                     )
                     cryptor = cipher.decryptor()
+
+                if nextenc is None:
+                    signature = enc[-32:]
+                    enc = enc[:-32]
+                    h.update(enc)
+                    h.verify(signature)
+                else:
+                    h.update(enc)
+
                 yield cryptor.update(enc)
 
             yield cryptor.finalize()
 
-        func.size = lambda x: x - 32   # iv and salt are 32 bytes
+        func.size = lambda x: x - 64   # iv, salt and signature are 64 bytes
 
         return func
 
