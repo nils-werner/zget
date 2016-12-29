@@ -5,12 +5,7 @@ import os
 import sys
 import time
 import socket
-try:
-    import urllib.request as urllib
-    import urllib.parse as urlparse
-except ImportError:
-    import urllib
-    import urlparse
+import six.moves.urllib as urllib
 import hashlib
 import logging
 
@@ -173,7 +168,7 @@ def get(
             {'a': listener.address, 'p': listener.port}
         )
         url = "http://" + listener.address + ":" + str(listener.port) + "/" + \
-              urllib.pathname2url(filename)
+              urllib.request.pathname2url(filename)
 
         utils.urlretrieve(
             url, output,

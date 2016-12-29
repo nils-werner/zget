@@ -40,6 +40,7 @@ Done.""",
         packages=setuptools.find_packages(),
 
         install_requires=[
+            'six',
             'zeroconf<0.17.6',
             'netifaces<0.10.5',
             'progressbar2',

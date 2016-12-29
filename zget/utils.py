@@ -8,13 +8,8 @@ import netifaces
 import gettext
 import logging
 import progressbar
-try:
-    import configparser
-    import urllib.parse as urlparse
-    xrange = range
-except ImportError:
-    import ConfigParser as configparser
-    import urlparse
+from six.moves import configparser, range
+import six.moves.urllib.parse as urlparse
 
 t = gettext.translation(
     'zget',
@@ -176,7 +171,7 @@ def unique_filename(filename, limit=999):
     def make_filename(i):
         return os.path.join(path, '%s_%d%s' % (name, i, ext))
 
-    for i in xrange(1, limit):
+    for i in range(1, limit):
         unique_filename = make_filename(i)
         if not os.path.exists(unique_filename):
             return unique_filename

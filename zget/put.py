@@ -5,18 +5,12 @@ import os
 import sys
 import time
 import socket
-try:
-    import urllib.request as urllib
-except ImportError:
-    import urllib
+import six.moves.urllib as urllib
 import hashlib
 import logging
 
 from zeroconf import ServiceInfo, Zeroconf
-try:
-    from http.server import BaseHTTPRequestHandler, HTTPServer
-except ImportError:
-    from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+from six.moves.BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
 from . import utils
 from .utils import _
@@ -56,7 +50,7 @@ class FileHandler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         if self.path in map(
-            lambda x: urllib.pathname2url(os.path.join('/', x)),
+            lambda x: urllib.request.pathname2url(os.path.join('/', x)),
             self.server.allowed_basenames
         ):
             utils.logger.info(_("Peer found. Uploading..."))
