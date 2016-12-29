@@ -19,136 +19,149 @@ def password_derive(key, salt):
         iterations=100000,
         backend=backends.default_backend()
     )
-    return base64.urlsafe_b64encode(kdf.derive(key.encode('utf-8')))
+    return base64.urlsafe_b64encode(kdf.derive(key))
 
 
-class aes:
-    @staticmethod
-    def encrypt(str_key):
-        utils.logger.debug(_("Initializing AES encryptor"))
+class aes(object):
+    class encrypt(object):
+        def __init__(self, str_key):
+            utils.logger.debug(_("Initializing AES encryptor"))
 
-        from cryptography.hazmat.primitives import ciphers, hmac, hashes
-        from cryptography.hazmat import backends
+            from cryptography.hazmat import backends
 
-        def func(data):
-            backend = backends.default_backend()
-            salt = os.urandom(16)
-            hmac_salt = os.urandom(16)
-            iv = os.urandom(16)
-            key = password_derive(str_key, salt)
-            hmac_key = password_derive(str_key, hmac_salt)
-            h = hmac.HMAC(
-                hmac_key,
+            self.backend = backends.default_backend()
+            self.key = None
+            self.iv = None
+            self.salt = None
+            self.hmac_salt = None
+            self.cipher = None
+            self.cryptor = None
+            self.str_key = str_key.encode()
+            self.iv_sent = False
+
+        def __call__(self, data):
+            from cryptography.hazmat.primitives import ciphers, hmac, hashes
+
+            self.salt = os.urandom(16)
+            self.hmac_salt = os.urandom(16)
+            self.iv = os.urandom(16)
+            self.key = password_derive(self.str_key, self.salt)
+            self.hmac_key = password_derive(self.str_key, self.hmac_salt)
+            del self.str_key
+            self.h = hmac.HMAC(
+                self.hmac_key,
                 hashes.SHA256(),
-                backend=backend
+                backend=self.backend
             )
-            cipher = ciphers.Cipher(
-                ciphers.algorithms.AES(key),
-                ciphers.modes.CTR(iv),
-                backend=backend,
+            self.cipher = ciphers.Cipher(
+                ciphers.algorithms.AES(self.key),
+                ciphers.modes.CTR(self.iv),
+                backend=self.backend,
             )
-            cryptor = cipher.encryptor()
-            iv_sent = False
+            self.cryptor = self.cipher.encryptor()
 
             for raw in data:
-                out = cryptor.update(raw)
+                out = self.cryptor.update(raw)
 
-                if not iv_sent:
-                    out = iv + salt + hmac_salt + out
-                    iv_sent = True
+                if not self.iv_sent:
+                    out = self.iv + self.salt + self.hmac_salt + out
+                    self.iv_sent = True
 
-                h.update(out)
+                self.h.update(out)
 
                 yield out
 
-            out = cryptor.finalize()
-            h.update(out)
+            out = self.cryptor.finalize()
+            self.h.update(out)
             yield out
 
-            signature = h.finalize()
+            signature = self.h.finalize()
             yield signature
 
-        func.size = lambda x: x + 80   # iv, salts and signature are 80 bytes
+        def size(self, x):
+            return x + 80   # iv, salts and signature are 80 bytes
 
-        return func
+    class decrypt(object):
+        def __init__(self, str_key):
+            utils.logger.debug(_("Initializing AES decryptor"))
 
-    @staticmethod
-    def decrypt(str_key):
-        utils.logger.debug(_("Initializing AES decryptor"))
+            from cryptography.hazmat import backends
 
-        from cryptography.hazmat.primitives import ciphers, hmac, hashes
-        from cryptography.hazmat import backends
-        import cryptography.exceptions
+            self.backend = backends.default_backend()
+            self.key = None
+            self.iv = None
+            self.salt = None
+            self.hmac_salt = None
+            self.cipher = None
+            self.cryptor = None
+            self.str_key = str_key.encode()
 
-        def func(data):
-            backend = backends.default_backend()
-            key = None
-            iv = None
-            salt = None
-            hmac_salt = None
-            cipher = None
-            cryptor = None
+        def __call__(self, data):
+            from cryptography.hazmat.primitives import ciphers, hmac, hashes
+            import cryptography.exceptions
 
             # ensure minimum chunksize of 32 so we can easily read signature
             # iterate pairwise to detect last chunk and verify HMAC
             for enc, nextenc in utils.pairwise(utils.minimum_chunksize(data)):
-                if iv is None:
+                if self.iv is None:
                     utils.logger.debug(
                         _("Initializing AES initialization vector")
                     )
-                    iv = enc[:16]
-                    salt = enc[16:32]
-                    hmac_salt = enc[32:48]
-                    enc = enc[48:]
-                    key = password_derive(str_key, salt)
-                    hmac_key = password_derive(str_key, hmac_salt)
-                    h = hmac.HMAC(
-                        hmac_key,
+                    self.iv = enc[:16]
+                    self.salt = enc[16:32]
+                    self.hmac_salt = enc[32:48]
+                    self.key = password_derive(self.str_key, self.salt)
+                    self.hmac_key = password_derive(
+                        self.str_key, self.hmac_salt
+                    )
+                    del self.str_key
+                    self.h = hmac.HMAC(
+                        self.hmac_key,
                         hashes.SHA256(),
-                        backend=backend
+                        backend=self.backend
                     )
-                    cipher = ciphers.Cipher(
-                        ciphers.algorithms.AES(key),
-                        ciphers.modes.CTR(iv),
-                        backend=backend,
+                    self.cipher = ciphers.Cipher(
+                        ciphers.algorithms.AES(self.key),
+                        ciphers.modes.CTR(self.iv),
+                        backend=self.backend,
                     )
-                    cryptor = cipher.decryptor()
-                    h.update(iv + salt + hmac_salt)
+                    self.cryptor = self.cipher.decryptor()
+                    self.h.update(self.iv + self.salt + self.hmac_salt)
+
+                    enc = enc[48:]
 
                 if nextenc is None:
                     signature = enc[-32:]
                     enc = enc[:-32]
-                    h.update(enc)
+                    self.h.update(enc)
                     try:
-                        h.verify(signature)
+                        self.h.verify(signature)
                     except cryptography.exceptions.InvalidSignature:
                         raise RuntimeError(
                             _("File decryption failed. Did you supply the "
                               "correct password?")
                             )
                 else:
-                    h.update(enc)
+                    self.h.update(enc)
 
-                yield cryptor.update(enc)
+                yield self.cryptor.update(enc)
 
-            yield cryptor.finalize()
+            yield self.cryptor.finalize()
 
-        func.size = lambda x: x - 80   # iv, salts and signature are 80 bytes
+        def size(self, x):
+            return x - 80   # iv, salts and signature are 80 bytes
 
-        return func
 
+class bypass(object):
+    class encrypt(object):
+        def __init__(self, key=""):
+            utils.logger.debug(_("Initializing bypass cryptor"))
 
-class bypass:
-    @staticmethod
-    def encrypt(key=""):
-        utils.logger.debug(_("Initializing bypass cryptor"))
-
-        def func(data):
+        def __call__(self, data):
             for chunk in data:
                 yield chunk
 
-        func.size = lambda x: x
-
-        return func
+        def size(self, x):
+            return x
 
     decrypt = encrypt
