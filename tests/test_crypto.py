@@ -6,7 +6,15 @@ import string
 import pytest
 
 
-@pytest.fixture(params=[1, 12, 277, 1024*8, 1024*16, 1024*62 - 1])
+@pytest.fixture(params=[
+    1,                # tiny blocks
+    12,
+    277,
+    1024*8,           # exactly 1 block
+    1024*16,          # exactly 2 blocks
+    1024*62 - 1,      # some half-empty last blocks
+    1024*32 - 33
+])
 def size(request):
     return request.param
 
@@ -28,7 +36,12 @@ def suite(request):
     return request.param
 
 
-def test_invertibility(size, suite, payload):
+@pytest.fixture(params=[True, False])
+def corrupt(request):
+    return request.param
+
+
+def test_invertibility(size, suite, payload, corrupt):
     infile = BytesIO()
     tmpfile = BytesIO()
     outfile = BytesIO()
@@ -41,14 +54,26 @@ def test_invertibility(size, suite, payload):
 
     for data in cipher(utils.iter_content(infile)):
         tmpfile.write(data)
+
+    length = tmpfile.tell()
     tmpfile.seek(0)
+
+    if corrupt:
+        tmpfile.seek(length // 2)
+        tmpfile.write("garbage")
+        tmpfile.seek(0)
 
     for data in decipher(utils.iter_content(tmpfile)):
         outfile.write(data)
 
     if suite != crypto.bypass:
         assert payload != tmpfile.getvalue()
-    assert payload == outfile.getvalue()
+
+    if corrupt:
+        assert payload != outfile.getvalue()
+    else:
+        assert payload == outfile.getvalue()
+
     infile.close()
     tmpfile.close()
     outfile.close()
