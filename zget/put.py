@@ -4,6 +4,7 @@ from __future__ import absolute_import, division, print_function, \
 import os
 import sys
 import time
+import base64
 import socket
 import six.moves.urllib as urllib
 import getpass
@@ -55,12 +56,23 @@ class FileHandler(BaseHTTPRequestHandler):
             lambda x: urllib.request.pathname2url(os.path.join('/', x)),
             self.server.allowed_basenames
         ):
+            key_b = base64.urlsafe_b64encode(
+                self.server.ciphersuite.start()
+            )
+            try:
+                self.server.ciphersuite.finish(
+                    base64.urlsafe_b64decode(self.headers['key-exchange-a'])
+                )
+            except KeyError:
+                pass
+
             utils.logger.info(_("Peer found. Uploading..."))
             full_path = os.path.join(os.curdir, self.server.filename)
             with open(full_path, 'rb') as fh:
                 maxsize = os.path.getsize(full_path)
                 self.send_response(200)
                 self.send_header('Content-type', 'application/octet-stream')
+                self.send_header('key-exchange-b', key_b.decode("ascii"))
                 self.send_header(
                     'Content-disposition',
                     'inline; filename="%s"' % os.path.basename(

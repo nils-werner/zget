@@ -46,6 +46,10 @@ def test_invertibility(size, suite, payload):
 
     cipher = suite.encrypt("mykey")
     decipher = suite.decrypt("mykey")
+    key_a = decipher.start()
+    key_b = cipher.start()
+    cipher.finish(key_a)
+    decipher.finish(key_b)
 
     for data in cipher(utils.iter_content(infile)):
         tmpfile.write(data)
@@ -76,6 +80,10 @@ def test_corruption(size, payload):
 
     cipher = suite.encrypt("mykey")
     decipher = suite.decrypt("mykey")
+    key_a = decipher.start()
+    key_b = cipher.start()
+    cipher.finish(key_a)
+    decipher.finish(key_b)
 
     for data in cipher(utils.iter_content(infile)):
         tmpfile.write(data)
@@ -104,6 +112,10 @@ def test_encrypt(size, suite, payload):
     infile.seek(0)
 
     cipher = suite.encrypt("mykey")
+    decipher = suite.decrypt("mykey")
+    cipher.start()
+    cipher.finish(decipher.start())
+
     for data in cipher(utils.iter_content(infile)):
         pass
 

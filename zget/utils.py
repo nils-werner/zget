@@ -2,6 +2,7 @@ import sys
 import os
 import re
 import errno
+import base64
 import random
 import requests
 import netifaces
@@ -195,11 +196,23 @@ def urlretrieve(
     if ciphersuite is None:
         ciphersuite = crypto.bypass.decrypt()
 
-    r = requests.get(url, stream=True)
+    r = requests.get(
+        url, stream=True,
+        headers={
+            'key-exchange-a': base64.urlsafe_b64encode(ciphersuite.start())
+        }
+    )
     try:
         maxsize = int(r.headers['content-length'])
     except KeyError:
         maxsize = -1
+
+    try:
+        ciphersuite.finish(
+            base64.urlsafe_b64decode(r.headers['key-exchange-b'])
+        )
+    except KeyError:
+        pass
 
     if output is None:
         try:

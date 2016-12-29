@@ -39,6 +39,12 @@ class aes(object):
             self.str_key = str_key.encode()
             self.iv_sent = False
 
+        def start(self):
+            return b""
+
+        def finish(self, msg):
+            pass
+
         def __call__(self, data):
             from cryptography.hazmat.primitives import ciphers, hmac, hashes
 
@@ -95,6 +101,12 @@ class aes(object):
             self.cipher = None
             self.cryptor = None
             self.str_key = str_key.encode()
+
+        def start(self):
+            return b""
+
+        def finish(self, msg):
+            pass
 
         def __call__(self, data):
             from cryptography.hazmat.primitives import ciphers, hmac, hashes
@@ -156,6 +168,12 @@ class bypass(object):
     class encrypt(object):
         def __init__(self, key=""):
             utils.logger.debug(_("Initializing bypass cryptor"))
+
+        def start(self):
+            return b""
+
+        def finish(self, msg):
+            pass
 
         def __call__(self, data):
             for chunk in data:
