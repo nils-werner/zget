@@ -6,6 +6,7 @@ import sys
 import time
 import socket
 import six.moves.urllib as urllib
+import getpass
 import hashlib
 import logging
 
@@ -131,6 +132,7 @@ def cli(inargs=None):
     )
     parser.add_argument(
         '--password', '-p',
+        nargs='?', const='',
         metavar=_("PASSWORD"),
         help=_("Password for transfer encryption")
     )
@@ -151,6 +153,9 @@ def cli(inargs=None):
     args = parser.parse_args(inargs)
 
     utils.enable_logger(args.verbose)
+
+    if args.password == "":
+        args.password = getpass.getpass(_("Password for '%s': ") % args.input)
 
     if args.password is not None:
         try:
