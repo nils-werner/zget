@@ -37,12 +37,37 @@ def suite(request):
     return request.param
 
 
-@pytest.fixture(params=[True, False])
-def corrupt(request):
-    return request.param
+def test_invertibility(size, suite, payload):
+    infile = BytesIO()
+    tmpfile = BytesIO()
+    outfile = BytesIO()
+
+    infile.write(payload)
+    infile.seek(0)
+
+    cipher = suite.encrypt("mykey")
+    decipher = suite.decrypt("mykey")
+
+    for data in cipher(utils.iter_content(infile)):
+        tmpfile.write(data)
+
+    tmpfile.seek(0)
+
+    for data in decipher(utils.iter_content(tmpfile)):
+        outfile.write(data)
+
+    if suite != crypto.bypass:
+        assert payload != tmpfile.getvalue()
+
+    assert payload == outfile.getvalue()
+
+    infile.close()
+    tmpfile.close()
+    outfile.close()
 
 
-def test_invertibility(size, suite, payload, corrupt):
+def test_corruption(size, payload):
+    suite = crypto.aes
     infile = BytesIO()
     tmpfile = BytesIO()
     outfile = BytesIO()
@@ -57,28 +82,16 @@ def test_invertibility(size, suite, payload, corrupt):
         tmpfile.write(data)
 
     length = tmpfile.tell()
+    tmpfile.seek(length // 2)
+    tmpfile.write(b"garbage")
     tmpfile.seek(0)
 
-    if corrupt:
-        tmpfile.seek(length // 2)
-        tmpfile.write(b"garbage")
-        tmpfile.seek(0)
-
-    if corrupt and suite != crypto.bypass:
-        with pytest.raises(cryptography.exceptions.InvalidSignature):
-            for data in decipher(utils.iter_content(tmpfile)):
-                outfile.write(data)
-    else:
+    with pytest.raises(cryptography.exceptions.InvalidSignature):
         for data in decipher(utils.iter_content(tmpfile)):
             outfile.write(data)
 
-    if suite != crypto.bypass:
-        assert payload != tmpfile.getvalue()
-
-    if corrupt:
-        assert payload != outfile.getvalue()
-    else:
-        assert payload == outfile.getvalue()
+    assert payload != tmpfile.getvalue()
+    assert payload != outfile.getvalue()
 
     infile.close()
     tmpfile.close()
