@@ -52,11 +52,12 @@ class aes:
 
             for raw in data:
                 out = cryptor.update(raw)
-                h.update(out)
 
                 if not iv_sent:
                     out = iv + salt + hmac_salt + out
                     iv_sent = True
+
+                h.update(out)
 
                 yield out
 
@@ -111,6 +112,7 @@ class aes:
                         backend=backend,
                     )
                     cryptor = cipher.decryptor()
+                    h.update(iv + salt + hmac_salt)
 
                 if nextenc is None:
                     signature = enc[-32:]
