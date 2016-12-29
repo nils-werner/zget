@@ -33,10 +33,12 @@ class aes:
         def func(data):
             backend = backends.default_backend()
             salt = os.urandom(16)
+            hmac_salt = os.urandom(16)
             iv = os.urandom(16)
             key = password_derive(str_key, salt)
+            hmac_key = password_derive(str_key, hmac_salt)
             h = hmac.HMAC(
-                key,
+                hmac_key,
                 hashes.SHA256(),
                 backend=backend
             )
@@ -53,7 +55,7 @@ class aes:
                 h.update(out)
 
                 if not iv_sent:
-                    out = iv + salt + out
+                    out = iv + salt + hmac_salt + out
                     iv_sent = True
 
                 yield out
@@ -65,7 +67,7 @@ class aes:
             signature = h.finalize()
             yield signature
 
-        func.size = lambda x: x + 64   # iv, salt and signature are 64 bytes
+        func.size = lambda x: x + 80   # iv, salts and signature are 80 bytes
 
         return func
 
@@ -81,6 +83,7 @@ class aes:
             key = None
             iv = None
             salt = None
+            hmac_salt = None
             cipher = None
             cryptor = None
 
@@ -93,10 +96,12 @@ class aes:
                     )
                     iv = enc[:16]
                     salt = enc[16:32]
-                    enc = enc[32:]
+                    hmac_salt = enc[32:48]
+                    enc = enc[48:]
                     key = password_derive(str_key, salt)
+                    hmac_key = password_derive(str_key, hmac_salt)
                     h = hmac.HMAC(
-                        key,
+                        hmac_key,
                         hashes.SHA256(),
                         backend=backend
                     )
@@ -119,7 +124,7 @@ class aes:
 
             yield cryptor.finalize()
 
-        func.size = lambda x: x - 64   # iv, salt and signature are 64 bytes
+        func.size = lambda x: x - 80   # iv, salts and signature are 80 bytes
 
         return func
 
