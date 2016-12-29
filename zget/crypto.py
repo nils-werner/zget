@@ -36,7 +36,7 @@ class aes:
             key = password_derive(str_key, salt)
             cipher = ciphers.Cipher(
                 ciphers.algorithms.AES(key),
-                ciphers.modes.CFB(iv),
+                ciphers.modes.CTR(iv),
                 backend=backend,
             )
             cryptor = cipher.encryptor()
@@ -83,7 +83,7 @@ class aes:
                     key = password_derive(str_key, salt)
                     cipher = ciphers.Cipher(
                         ciphers.algorithms.AES(key),
-                        ciphers.modes.CFB(iv),
+                        ciphers.modes.CTR(iv),
                         backend=backend,
                     )
                     cryptor = cipher.decryptor()
