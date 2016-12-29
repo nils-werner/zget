@@ -31,7 +31,7 @@ def payload(size):
     )
 
 
-@pytest.fixture(params=[crypto.aes, crypto.bypass])
+@pytest.fixture(params=[crypto.aes, crypto.aes_spake, crypto.bypass])
 def suite(request):
     return request.param
 

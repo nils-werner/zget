@@ -164,6 +164,52 @@ class aes(object):
             return x - 80   # iv, salts and signature are 80 bytes
 
 
+class aes_spake(object):
+    class encrypt(aes.encrypt):
+        def __init__(self, str_key):
+            super(aes_spake.encrypt, self).__init__(str_key)
+            utils.logger.debug(_("Initializing AES SPAKE2 encryptor"))
+            from spake2 import SPAKE2_B
+
+            self.exchange = SPAKE2_B(str_key.encode())
+            self.str_key = None
+
+        def start(self):
+            return self.exchange.start()
+
+        def finish(self, msg):
+            self.str_key = self.exchange.finish(msg)
+
+        def __call__(self, data):
+            if self.str_key is None:
+                raise RuntimeError(_("Password key exchange not finished"))
+
+            for x in super(aes_spake.encrypt, self).__call__(data):
+                yield x
+
+    class decrypt(aes.decrypt):
+        def __init__(self, str_key):
+            super(aes_spake.decrypt, self).__init__(str_key)
+            utils.logger.debug(_("Initializing AES SPAKE decryptor"))
+            from spake2 import SPAKE2_A
+
+            self.exchange = SPAKE2_A(str_key.encode())
+            self.str_key = None
+
+        def start(self):
+            return self.exchange.start()
+
+        def finish(self, msg):
+            self.str_key = self.exchange.finish(msg)
+
+        def __call__(self, data):
+            if self.str_key is None:
+                raise RuntimeError(_("Password key exchange not finished"))
+
+            for x in super(aes_spake.decrypt, self).__call__(data):
+                yield x
+
+
 class bypass(object):
     class encrypt(object):
         def __init__(self, key=""):

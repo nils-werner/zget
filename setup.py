@@ -55,6 +55,7 @@ Done.""",
         extras_require={
             'crypto': [
                 'cryptography',
+                'spake2',
             ],
             'docs': [
                 'sphinx',
@@ -64,6 +65,7 @@ Done.""",
             ],
             'tests': [
                 'cryptography',
+                'spake2',
                 'pytest',
                 'pytest-cov',
                 'pytest-pep8',

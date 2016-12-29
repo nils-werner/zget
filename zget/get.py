@@ -95,7 +95,7 @@ def cli(inargs=None):
 
     if args.password is not None:
         try:
-            ciphersuite = crypto.aes.decrypt(args.password)
+            ciphersuite = crypto.aes_spake.decrypt(args.password)
         except ImportError:
             raise ImportError(_(
                 "Could not load cipher suite. Did you install cryptography?"

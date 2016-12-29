@@ -7,3 +7,5 @@ sphinx
 sphinxcontrib-napoleon
 sphinx_rtd_theme
 numpydoc
+cryptography
+spake2

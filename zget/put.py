@@ -171,7 +171,7 @@ def cli(inargs=None):
 
     if args.password is not None:
         try:
-            ciphersuite = crypto.aes.encrypt(args.password)
+            ciphersuite = crypto.aes_spake.encrypt(args.password)
         except ImportError:
             raise ImportError(_(
                 "Could not load cipher suite. Did you install cryptography?"
