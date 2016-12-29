@@ -4,7 +4,6 @@ from six import BytesIO
 import random
 import string
 import pytest
-import cryptography.exceptions
 
 
 @pytest.fixture(params=[
@@ -86,7 +85,7 @@ def test_corruption(size, payload):
     tmpfile.write(b"garbage")
     tmpfile.seek(0)
 
-    with pytest.raises(cryptography.exceptions.InvalidSignature):
+    with pytest.raises(RuntimeError):
         for data in decipher(utils.iter_content(tmpfile)):
             outfile.write(data)
 

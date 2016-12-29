@@ -78,6 +78,7 @@ class aes:
 
         from cryptography.hazmat.primitives import ciphers, hmac, hashes
         from cryptography.hazmat import backends
+        import cryptography.exceptions
 
         def func(data):
             backend = backends.default_backend()
@@ -118,7 +119,13 @@ class aes:
                     signature = enc[-32:]
                     enc = enc[:-32]
                     h.update(enc)
-                    h.verify(signature)
+                    try:
+                        h.verify(signature)
+                    except cryptography.exceptions.InvalidSignature:
+                        raise RuntimeError(
+                            _("File decryption failed. Did you supply the "
+                              "correct password?")
+                            )
                 else:
                     h.update(enc)
 
