@@ -9,7 +9,7 @@ import itertools
 import gettext
 import logging
 import progressbar
-from six.moves import configparser, range
+from six.moves import configparser, range, zip_longest
 import six.moves.urllib.parse as urlparse
 
 t = gettext.translation(
@@ -272,4 +272,4 @@ def pairwise(iterable):
     """
     a, b = itertools.tee(iterable)
     next(b, None)
-    return itertools.izip_longest(a, b)
+    return zip_longest(a, b)

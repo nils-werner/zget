@@ -61,7 +61,7 @@ def test_invertibility(size, suite, payload, corrupt):
 
     if corrupt:
         tmpfile.seek(length // 2)
-        tmpfile.write("garbage")
+        tmpfile.write(b"garbage")
         tmpfile.seek(0)
 
     if corrupt and suite != crypto.bypass:
