@@ -207,12 +207,19 @@ def urlretrieve(
     else:
         filename = output
 
-    with open(filename, 'wb') as f:
-        for i, chunk in enumerate(r.iter_content(chunk_size=1024 * 8)):
-            if chunk:
-                f.write(chunk)
-                if reporthook is not None:
-                    reporthook(i, 1024 * 8, maxsize)
+    try:
+        with open(filename, 'wb') as f:
+            for i, chunk in enumerate(r.iter_content(chunk_size=1024 * 8)):
+                if chunk:
+                    f.write(chunk)
+                    if reporthook is not None:
+                        reporthook(i, 1024 * 8, maxsize)
+    except Exception as e:
+        try:
+            os.remove(filename)
+        except OSError:
+            pass
+        raise
 
 
 def generate_alias(length=4):
