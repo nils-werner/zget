@@ -4,6 +4,7 @@ from setuptools.command.sdist import sdist
 
 class Sdist(sdist):
     def run(self):
+        self.run_command('extract_messages')
         self.run_command('compile_catalog')
         sdist.run(self)
 
