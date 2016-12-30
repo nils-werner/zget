@@ -216,11 +216,15 @@ def urlretrieve(
                     if reporthook is not None:
                         reporthook(i, 1024 * 8, maxsize)
     except Exception as e:
-        try:
-            os.remove(filename)
-        except OSError:
-            pass
+        silentremove(filename)
         raise
+
+
+def silentremove(filename):
+    try:
+        return os.remove(filename)
+    except Exception:
+        pass
 
 
 def generate_alias(length=4):
