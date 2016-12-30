@@ -167,7 +167,9 @@ def cli(inargs=None):
     utils.enable_logger(args.verbose)
 
     if args.password == "":
-        args.password = getpass.getpass(_("Password for '%s': ") % args.input)
+        args.password = getpass.getpass(
+            (_("Password for '%s': ") % args.input).encode("utf-8", "ignore")
+        )
 
     if args.password is not None:
         try:

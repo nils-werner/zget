@@ -7,6 +7,13 @@ from . import utils
 from .utils import _
 
 
+outdated_msg = " " + _(
+    "Maybe the other end is "
+    "not using encryption or is running an outdated version "
+    "of zget?"
+)
+
+
 def password_derive(key, salt):
     from cryptography.hazmat.primitives import hashes
     from cryptography.hazmat.primitives.kdf import pbkdf2
@@ -48,6 +55,9 @@ class aes(object):
         def __call__(self, data):
             from cryptography.hazmat.primitives import ciphers, hmac, hashes
 
+            utils.logger.debug(
+                _("Initializing AES parameters")
+            )
             self.salt = os.urandom(16)
             self.hmac_salt = os.urandom(16)
             self.iv = os.urandom(16)
@@ -81,6 +91,7 @@ class aes(object):
             self.h.update(out)
             yield out
 
+            utils.logger.debug(_("Sending HMAC signature"))
             signature = self.h.finalize()
             yield signature
 
@@ -116,9 +127,7 @@ class aes(object):
             # iterate pairwise to detect last chunk and verify HMAC
             for enc, nextenc in utils.pairwise(utils.minimum_chunksize(data)):
                 if self.iv is None:
-                    utils.logger.debug(
-                        _("Initializing AES initialization vector")
-                    )
+                    utils.logger.debug(_("Received AES parameters"))
                     self.iv = enc[:16]
                     self.salt = enc[16:32]
                     self.hmac_salt = enc[32:48]
@@ -145,13 +154,15 @@ class aes(object):
                 if nextenc is None:
                     signature = enc[-32:]
                     enc = enc[:-32]
+                    utils.logger.debug(_("Received HMAC signature"))
                     self.h.update(enc)
                     try:
                         self.h.verify(signature)
+                        utils.logger.debug(_("HMAC verification OK"))
                     except cryptography.exceptions.InvalidSignature:
                         raise RuntimeError(
-                            _("File decryption failed. Did you supply the "
-                              "correct password?")
+                            _("File decryption and verification failed. Did "
+                              "you supply the correct password?")
                             )
                 else:
                     self.h.update(enc)
@@ -178,11 +189,22 @@ class aes_spake(object):
             return self.exchange.start()
 
         def finish(self, msg):
-            self.str_key = self.exchange.finish(msg)
+            from spake2 import SPAKEError
+
+            try:
+                self.str_key = self.exchange.finish(msg)
+                utils.logger.debug(
+                    _("SPAKE2 Key Exchange finished")
+                )
+            except SPAKEError:
+                raise ValueError(_("The key exchange failed.") + outdated_msg)
 
         def __call__(self, data):
             if self.str_key is None:
-                raise RuntimeError(_("Password key exchange not finished"))
+                raise RuntimeError(
+                    _("Password key exchange did not finish before starting "
+                      "the transfer.") + outdated_msg
+                )
 
             for x in super(aes_spake.encrypt, self).__call__(data):
                 yield x
@@ -190,7 +212,7 @@ class aes_spake(object):
     class decrypt(aes.decrypt):
         def __init__(self, str_key):
             super(aes_spake.decrypt, self).__init__(str_key)
-            utils.logger.debug(_("Initializing AES SPAKE decryptor"))
+            utils.logger.debug(_("Initializing AES SPAKE2 decryptor"))
             from spake2 import SPAKE2_A
 
             self.exchange = SPAKE2_A(str_key.encode())
@@ -200,11 +222,24 @@ class aes_spake(object):
             return self.exchange.start()
 
         def finish(self, msg):
-            self.str_key = self.exchange.finish(msg)
+            from spake2 import SPAKEError
+
+            try:
+                self.str_key = self.exchange.finish(msg)
+                utils.logger.debug(
+                    _("SPAKE2 Key Exchange finished")
+                )
+            except SPAKEError:
+                raise ValueError(
+                    _("The key exchange failed.") + outdated_msg
+                )
 
         def __call__(self, data):
             if self.str_key is None:
-                raise RuntimeError(_("Password key exchange not finished"))
+                raise RuntimeError(
+                    _("Password key exchange did not finish before starting "
+                      "the transfer.") + outdated_msg
+                )
 
             for x in super(aes_spake.decrypt, self).__call__(data):
                 yield x

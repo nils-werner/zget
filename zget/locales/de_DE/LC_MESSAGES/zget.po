@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  \n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-12-29 20:10+0100\n"
+"POT-Creation-Date: 2016-12-30 13:16+0100\n"
 "PO-Revision-Date: 2015-12-24 13:00+0100\n"
 "Last-Translator: \n"
 "Language: de_DE\n"
@@ -14,23 +14,72 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.3.4\n"
 
-#: zget/crypto.py:28
+#: zget/crypto.py:10
+msgid ""
+"Maybe the other end is not using encryption or is running an outdated "
+"version of zget?"
+msgstr ""
+"Vielleicht benutzt die andere Seite keine Verschlüsselung oder eine "
+"veraltete zget-Version?"
+
+#: zget/crypto.py:35
 msgid "Initializing AES encryptor"
 msgstr "Initialisiere AES Verschlüsselung"
 
-#: zget/crypto.py:77
+#: zget/crypto.py:59
+msgid "Initializing AES parameters"
+msgstr "Initialisiere AES Parameter"
+
+#: zget/crypto.py:94
+msgid "Sending HMAC signature"
+msgstr "Sende HMAC Signatur"
+
+#: zget/crypto.py:103
 msgid "Initializing AES decryptor"
 msgstr "Initialisiere AES Verschlüsselung"
 
-#: zget/crypto.py:97
-msgid "Initializing AES initialization vector"
-msgstr "Initialisiere AES Initialisierungsvektor"
+#: zget/crypto.py:130
+msgid "Received AES parameters"
+msgstr "AES Parameter empfangen"
 
-#: zget/crypto.py:126
-msgid "File decryption failed. Did you supply the correct password?"
+#: zget/crypto.py:157
+msgid "Received HMAC signature"
+msgstr "HMAC Signatur empfangen"
+
+#: zget/crypto.py:161
+msgid "HMAC verification OK"
+msgstr "HMAC Überprüfung OK"
+
+#: zget/crypto.py:164
+#, fuzzy
+msgid ""
+"File decryption and verification failed. Did you supply the correct "
+"password?"
 msgstr "Entschlüsselung fehlgeschlagen. Haben Sie das richtige Passwort angegeben?"
 
-#: zget/crypto.py:144
+#: zget/crypto.py:182
+#, fuzzy
+msgid "Initializing AES SPAKE2 encryptor"
+msgstr "Initialisiere AES Verschlüsselung"
+
+#: zget/crypto.py:197 zget/crypto.py:230
+msgid "SPAKE2 Key Exchange finished"
+msgstr "SPAKE2 Schlüsselaustausch abgeschlossen"
+
+#: zget/crypto.py:200 zget/crypto.py:234
+msgid "The key exchange failed."
+msgstr "Schlüsselaustausch fehlgeschlagen"
+
+#: zget/crypto.py:205 zget/crypto.py:240
+msgid "Password key exchange did not finish before starting the transfer."
+msgstr "Schlüsselaustausch wurde nicht abgeschlosen bevor die Übertragung begann."
+
+#: zget/crypto.py:215
+#, fuzzy
+msgid "Initializing AES SPAKE2 decryptor"
+msgstr "Initialisiere AES Verschlüsselung"
+
+#: zget/crypto.py:251
 msgid "Initializing bypass cryptor"
 msgstr "Initialisiere Bypass Verschlüsselung"
 
@@ -38,27 +87,27 @@ msgstr "Initialisiere Bypass Verschlüsselung"
 msgid "Peer found. Downloading..."
 msgstr "Gegenstelle gefunden. Lade herunter..."
 
-#: zget/get.py:56 zget/put.py:121
+#: zget/get.py:56 zget/put.py:133
 msgid "Verbose mode. Multiple -v options increase the verbosity"
 msgstr "Verbose Modus. Mehrere -v optionen erhöhen ausführlichkeit"
 
-#: zget/get.py:61 zget/put.py:126
+#: zget/get.py:61 zget/put.py:138
 msgid "Quiet mode. Hides progess bar"
 msgstr "Stiller Modus. Versteckt Fortschrittsbalken"
 
-#: zget/get.py:65 zget/put.py:130
+#: zget/get.py:65 zget/put.py:142
 msgid "SECONDS"
 msgstr "SEKUNDEN"
 
-#: zget/get.py:66 zget/put.py:131
+#: zget/get.py:66 zget/put.py:143
 msgid "Set timeout after which program aborts transfer"
 msgstr "Zeitdauer, nach der Transfer abgebrochen wird"
 
-#: zget/get.py:71 zget/put.py:136
+#: zget/get.py:71 zget/put.py:148
 msgid "PASSWORD"
 msgstr "PASSWORT"
 
-#: zget/get.py:72 zget/put.py:137
+#: zget/get.py:72 zget/put.py:149
 msgid "Password for transfer encryption"
 msgstr "Passwort für Übertragungs-Verschlüsselung"
 
@@ -78,21 +127,21 @@ msgstr "ausgabe"
 msgid "The local filename to save to"
 msgstr "Die lokale Datei zum Speichern"
 
-#: zget/get.py:94 zget/put.py:158
+#: zget/get.py:96 zget/put.py:171
 #, python-format
 msgid "Password for '%s': "
 msgstr "Passwort für '%s': "
 
-#: zget/get.py:100 zget/put.py:164
+#: zget/get.py:104 zget/put.py:178
 msgid "Could not load cipher suite. Did you install cryptography?"
 msgstr "Konnte Verschlüsselung nicht laden. Haben Sie cryptography installiert?"
 
-#: zget/get.py:110
+#: zget/get.py:114
 #, python-format
 msgid "Upload a file using `zput <filename> %s`"
 msgstr "Laden Sie eine Datei mittels `zput <filename> %s` hoch"
 
-#: zget/get.py:114
+#: zget/get.py:118
 #, python-format
 msgid "Upload a file using `zput %(f)s` or `zput <filename> %(f)s`"
 msgstr ""
@@ -107,90 +156,90 @@ msgstr ""
 "Ein Fehler ist aufgetreten. Versuchen sie, für eine vollständige Meldung,"
 " zget im Debug Modus (-vvv) auszuführen."
 
-#: zget/get.py:178
+#: zget/get.py:182
 #, python-format
 msgid "Looking for %s._zget._http._tcp.local."
 msgstr "Suche nach %s._zget._http._tcp.local."
 
-#: zget/get.py:194
+#: zget/get.py:198
 #, python-format
 msgid "Downloading from %(a)s:%(p)d"
 msgstr "Lade herunter von %(a)s:%(p)d"
 
-#: zget/get.py:207 zget/put.py:321
+#: zget/get.py:211 zget/put.py:335
 msgid "Done."
 msgstr "Fertig."
 
-#: zget/put.py:32
+#: zget/put.py:33
 #, python-format
 msgid "%s is not a valid IP address"
 msgstr "%s ist keine gültige IP Adresse"
 
-#: zget/put.py:58
+#: zget/put.py:69
 msgid "Peer found. Uploading..."
 msgstr "Gegenstelle gefunden. Lade hoch..."
 
-#: zget/put.py:87
+#: zget/put.py:99
 msgid "Invalid request received. Aborting."
 msgstr "Ungültige Anfrage empfangen. Breche ab."
 
-#: zget/put.py:106
+#: zget/put.py:118
 msgid "PORT"
 msgstr "PORT"
 
-#: zget/put.py:107
+#: zget/put.py:119
 msgid "The port to share the file on"
 msgstr "Der Port auf dem die Datei geteilt werden soll"
 
-#: zget/put.py:111
+#: zget/put.py:123
 msgid "ADDRESS"
 msgstr "ADRESSE"
 
-#: zget/put.py:112
+#: zget/put.py:124
 msgid "The address to share the file on"
 msgstr "Die Adresse auf der die Datei geteilt werden soll"
 
-#: zget/put.py:115
+#: zget/put.py:127
 msgid "INTERFACE"
 msgstr "INTERFACE"
 
-#: zget/put.py:116
+#: zget/put.py:128
 msgid "The interface to share the file on"
 msgstr "Das Interface auf dem die Datei geteilt werden soll"
 
-#: zget/put.py:145
+#: zget/put.py:157
 msgid "input"
 msgstr "eingabe"
 
-#: zget/put.py:146
+#: zget/put.py:158
 msgid "The file to share on the network"
 msgstr "Die Datei, die im Netzwert geteilt werden soll"
 
-#: zget/put.py:173
+#: zget/put.py:187
 #, python-format
 msgid "File %s does not exist"
 msgstr "Datei %s existiert nicht"
 
-#: zget/put.py:177
+#: zget/put.py:191
 msgid "You may only provide one of --address or --interface"
 msgstr "Sie können lediglich --address oder --interface setzen, aber nicht beide"
 
-#: zget/put.py:185
+#: zget/put.py:199
 #, python-format
 msgid "Download this file using `zget %(f)s` or `zget %(o)s`"
 msgstr "Laden Sie diese Datei mittels `zget %(f)s` oder `zget %(o)s` herunter"
 
-#: zget/put.py:253
+#: zget/put.py:267
 #, python-format
 msgid "Port %d exceeds allowed range"
 msgstr "Port %d liegt oberhalb des erlaubten Wertebereich"
 
-#: zget/put.py:283
+#: zget/put.py:297
 #, python-format
 msgid "Using interface %s"
 msgstr "Benutze Interface %s"
 
-#: zget/put.py:287
+#: zget/put.py:301
 #, python-format
 msgid ""
 "Listening on %(a)s:%(p)d \n"
@@ -199,16 +248,16 @@ msgstr ""
 "Horche auf %(a)s:%(p)d \n"
 "Sie können Addresse mittels --address und Port mittels --port verändern"
 
-#: zget/put.py:297
+#: zget/put.py:311
 #, python-format
 msgid "Broadcasting as %s._zget._http._tcp.local."
 msgstr "Sende als %s._zget._http._tcp.local."
 
-#: zget/utils.py:33
+#: zget/utils.py:34
 msgid "Timeout."
 msgstr "Zeitüberschreitung."
 
-#: zget/utils.py:162
+#: zget/utils.py:163
 msgid "You have selected an invalid interface"
 msgstr "Sie haben ein ungültiges Interface gewählt."
 
@@ -223,3 +272,6 @@ msgstr "Sie haben ein ungültiges Interface gewählt."
 
 #~ msgid "error:"
 #~ msgstr "Fehler:"
+
+#~ msgid "Initializing AES initialization vector"
+#~ msgstr "Initialisiere AES Initialisierungsvektor"
