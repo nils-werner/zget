@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  \n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-12-30 13:16+0100\n"
+"POT-Creation-Date: 2016-12-30 13:45+0100\n"
 "PO-Revision-Date: 2015-12-24 13:00+0100\n"
 "Last-Translator: \n"
 "Language: de_DE\n"
@@ -148,7 +148,7 @@ msgstr ""
 "Laden Sie eine Datei mittels `zput %(f)s` oder `zput <filename> %(f)s` "
 "hoch"
 
-#: zget/get.py:114 zget/put.py:183
+#: zget/get.py:141 zget/put.py:219
 msgid ""
 "An Error occurred. For a full traceback try running zget again with "
 "enabled verbosity (-vvv)."
@@ -156,17 +156,17 @@ msgstr ""
 "Ein Fehler ist aufgetreten. Versuchen sie, für eine vollständige Meldung,"
 " zget im Debug Modus (-vvv) auszuführen."
 
-#: zget/get.py:182
+#: zget/get.py:186
 #, python-format
 msgid "Looking for %s._zget._http._tcp.local."
 msgstr "Suche nach %s._zget._http._tcp.local."
 
-#: zget/get.py:198
+#: zget/get.py:202
 #, python-format
 msgid "Downloading from %(a)s:%(p)d"
 msgstr "Lade herunter von %(a)s:%(p)d"
 
-#: zget/get.py:211 zget/put.py:335
+#: zget/get.py:215 zget/put.py:339
 msgid "Done."
 msgstr "Fertig."
 
@@ -229,17 +229,17 @@ msgstr "Sie können lediglich --address oder --interface setzen, aber nicht beid
 msgid "Download this file using `zget %(f)s` or `zget %(o)s`"
 msgstr "Laden Sie diese Datei mittels `zget %(f)s` oder `zget %(o)s` herunter"
 
-#: zget/put.py:267
+#: zget/put.py:271
 #, python-format
 msgid "Port %d exceeds allowed range"
 msgstr "Port %d liegt oberhalb des erlaubten Wertebereich"
 
-#: zget/put.py:297
+#: zget/put.py:301
 #, python-format
 msgid "Using interface %s"
 msgstr "Benutze Interface %s"
 
-#: zget/put.py:301
+#: zget/put.py:305
 #, python-format
 msgid ""
 "Listening on %(a)s:%(p)d \n"
@@ -248,7 +248,7 @@ msgstr ""
 "Horche auf %(a)s:%(p)d \n"
 "Sie können Addresse mittels --address und Port mittels --port verändern"
 
-#: zget/put.py:311
+#: zget/put.py:315
 #, python-format
 msgid "Broadcasting as %s._zget._http._tcp.local."
 msgstr "Sende als %s._zget._http._tcp.local."
@@ -257,7 +257,7 @@ msgstr "Sende als %s._zget._http._tcp.local."
 msgid "Timeout."
 msgstr "Zeitüberschreitung."
 
-#: zget/utils.py:163
+#: zget/utils.py:164
 msgid "You have selected an invalid interface"
 msgstr "Sie haben ein ungültiges Interface gewählt."
 
@@ -275,3 +275,4 @@ msgstr "Sie haben ein ungültiges Interface gewählt."
 
 #~ msgid "Initializing AES initialization vector"
 #~ msgstr "Initialisiere AES Initialisierungsvektor"
+
