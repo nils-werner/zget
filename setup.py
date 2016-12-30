@@ -46,6 +46,8 @@ Done.""",
             'netifaces<0.10.5',
             'progressbar2',
             'requests',
+            'cryptography',
+            'spake2',
         ],
 
         setup_requires=[
@@ -53,10 +55,6 @@ Done.""",
         ],
 
         extras_require={
-            'crypto': [
-                'cryptography',
-                'spake2',
-            ],
             'docs': [
                 'sphinx',
                 'sphinxcontrib-napoleon',

@@ -67,9 +67,14 @@ def cli(inargs=None):
     )
     parser.add_argument(
         '--password', '-p',
-        nargs='?', const='',
+        nargs='?',
         metavar=_("PASSWORD"),
         help=_("Password for transfer encryption")
+    )
+    parser.add_argument(
+        '--bypass-encryption',
+        action='store_true',
+        help=_("Bypass transfer encryption, for legacy clients. DANGEROUS!")
     )
     parser.add_argument(
         '--version', '-V',
@@ -90,14 +95,14 @@ def cli(inargs=None):
 
     utils.enable_logger(args.verbose)
 
-    if args.password == "":
+    if args.password is None and not args.bypass_encryption:
         args.password = getpass.getpass(
             (
                 _("Password for '%s': ") % args.filename
             ).encode("utf-8", "ignore")
         )
 
-    if args.password is not None:
+    if not args.bypass_encryption:
         try:
             ciphersuite = crypto.aes_spake.decrypt(args.password)
         except ImportError:
@@ -105,6 +110,9 @@ def cli(inargs=None):
                 "Could not load cipher suite. Did you install cryptography?"
             ))
     else:
+        utils.logger.warn(
+            _("WARNING: Encryption and authentication DISABLED!")
+        )
         ciphersuite = crypto.bypass.decrypt()
 
     if args.filename is None:

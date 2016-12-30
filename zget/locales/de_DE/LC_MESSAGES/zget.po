@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  \n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-12-30 13:45+0100\n"
+"POT-Creation-Date: 2016-12-30 15:09+0100\n"
 "PO-Revision-Date: 2015-12-24 13:00+0100\n"
 "Last-Translator: \n"
 "Language: de_DE\n"
@@ -111,44 +111,52 @@ msgstr "PASSWORT"
 msgid "Password for transfer encryption"
 msgstr "Passwort für Übertragungs-Verschlüsselung"
 
-#: zget/get.py:80
+#: zget/get.py:77 zget/put.py:154
+msgid "Bypass transfer encryption, for legacy clients. DANGEROUS!"
+msgstr "Verschlüsselung deaktivieren, für veraltete Gegenstellen. GEFÄHRLICH!"
+
+#: zget/get.py:85
 msgid "filename"
 msgstr "dateiname"
 
-#: zget/get.py:82
+#: zget/get.py:87
 msgid "The filename to look for on the network"
 msgstr "Der Dateiname, nach dem im Netzwerk gesucht werden soll"
 
-#: zget/get.py:85
+#: zget/get.py:90
 msgid "output"
 msgstr "ausgabe"
 
-#: zget/get.py:87
+#: zget/get.py:92
 msgid "The local filename to save to"
 msgstr "Die lokale Datei zum Speichern"
 
-#: zget/get.py:96 zget/put.py:171
+#: zget/get.py:101 zget/put.py:176
 #, python-format
 msgid "Password for '%s': "
 msgstr "Passwort für '%s': "
 
-#: zget/get.py:104 zget/put.py:178
+#: zget/get.py:109 zget/put.py:183
 msgid "Could not load cipher suite. Did you install cryptography?"
 msgstr "Konnte Verschlüsselung nicht laden. Haben Sie cryptography installiert?"
 
-#: zget/get.py:114
+#: zget/get.py:114 zget/put.py:188
+msgid "WARNING: Encryption and authentication DISABLED!"
+msgstr "WARNUNG: Verschlüsselung und Authentifizierung DEAKTIVIERT!"
+
+#: zget/get.py:122
 #, python-format
 msgid "Upload a file using `zput <filename> %s`"
 msgstr "Laden Sie eine Datei mittels `zput <filename> %s` hoch"
 
-#: zget/get.py:118
+#: zget/get.py:126
 #, python-format
 msgid "Upload a file using `zput %(f)s` or `zput <filename> %(f)s`"
 msgstr ""
 "Laden Sie eine Datei mittels `zput %(f)s` oder `zput <filename> %(f)s` "
 "hoch"
 
-#: zget/get.py:141 zget/put.py:219
+#: zget/get.py:149 zget/put.py:227
 msgid ""
 "An Error occurred. For a full traceback try running zget again with "
 "enabled verbosity (-vvv)."
@@ -156,17 +164,17 @@ msgstr ""
 "Ein Fehler ist aufgetreten. Versuchen sie, für eine vollständige Meldung,"
 " zget im Debug Modus (-vvv) auszuführen."
 
-#: zget/get.py:186
+#: zget/get.py:194
 #, python-format
 msgid "Looking for %s._zget._http._tcp.local."
 msgstr "Suche nach %s._zget._http._tcp.local."
 
-#: zget/get.py:202
+#: zget/get.py:210
 #, python-format
 msgid "Downloading from %(a)s:%(p)d"
 msgstr "Lade herunter von %(a)s:%(p)d"
 
-#: zget/get.py:215 zget/put.py:339
+#: zget/get.py:223 zget/put.py:347
 msgid "Done."
 msgstr "Fertig."
 
@@ -207,39 +215,39 @@ msgstr "INTERFACE"
 msgid "The interface to share the file on"
 msgstr "Das Interface auf dem die Datei geteilt werden soll"
 
-#: zget/put.py:157
+#: zget/put.py:162
 msgid "input"
 msgstr "eingabe"
 
-#: zget/put.py:158
+#: zget/put.py:163
 msgid "The file to share on the network"
 msgstr "Die Datei, die im Netzwert geteilt werden soll"
 
-#: zget/put.py:187
+#: zget/put.py:195
 #, python-format
 msgid "File %s does not exist"
 msgstr "Datei %s existiert nicht"
 
-#: zget/put.py:191
+#: zget/put.py:199
 msgid "You may only provide one of --address or --interface"
 msgstr "Sie können lediglich --address oder --interface setzen, aber nicht beide"
 
-#: zget/put.py:199
+#: zget/put.py:207
 #, python-format
 msgid "Download this file using `zget %(f)s` or `zget %(o)s`"
 msgstr "Laden Sie diese Datei mittels `zget %(f)s` oder `zget %(o)s` herunter"
 
-#: zget/put.py:271
+#: zget/put.py:279
 #, python-format
 msgid "Port %d exceeds allowed range"
 msgstr "Port %d liegt oberhalb des erlaubten Wertebereich"
 
-#: zget/put.py:301
+#: zget/put.py:309
 #, python-format
 msgid "Using interface %s"
 msgstr "Benutze Interface %s"
 
-#: zget/put.py:305
+#: zget/put.py:313
 #, python-format
 msgid ""
 "Listening on %(a)s:%(p)d \n"
@@ -248,7 +256,7 @@ msgstr ""
 "Horche auf %(a)s:%(p)d \n"
 "Sie können Addresse mittels --address und Port mittels --port verändern"
 
-#: zget/put.py:315
+#: zget/put.py:323
 #, python-format
 msgid "Broadcasting as %s._zget._http._tcp.local."
 msgstr "Sende als %s._zget._http._tcp.local."
