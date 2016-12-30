@@ -6,6 +6,11 @@ import os
 from . import utils
 from .utils import _
 
+from cryptography.hazmat.primitives import ciphers, hmac, hashes
+from cryptography.hazmat.primitives.kdf import pbkdf2
+from cryptography.hazmat import backends
+import cryptography.exceptions
+from spake2 import SPAKEError, SPAKE2_A, SPAKE2_B
 
 outdated_msg = " " + _(
     "Maybe the other end is "
@@ -15,10 +20,6 @@ outdated_msg = " " + _(
 
 
 def password_derive(key, salt):
-    from cryptography.hazmat.primitives import hashes
-    from cryptography.hazmat.primitives.kdf import pbkdf2
-    from cryptography.hazmat import backends
-
     kdf = pbkdf2.PBKDF2HMAC(
         algorithm=hashes.SHA256(),
         length=16,
@@ -33,8 +34,6 @@ class aes(object):
     class encrypt(object):
         def __init__(self, str_key):
             utils.logger.debug(_("Initializing AES encryptor"))
-
-            from cryptography.hazmat import backends
 
             self.backend = backends.default_backend()
             self.key = None
@@ -53,8 +52,6 @@ class aes(object):
             pass
 
         def __call__(self, data):
-            from cryptography.hazmat.primitives import ciphers, hmac, hashes
-
             utils.logger.debug(
                 _("Initializing AES parameters")
             )
@@ -102,8 +99,6 @@ class aes(object):
         def __init__(self, str_key):
             utils.logger.debug(_("Initializing AES decryptor"))
 
-            from cryptography.hazmat import backends
-
             self.backend = backends.default_backend()
             self.key = None
             self.iv = None
@@ -120,9 +115,6 @@ class aes(object):
             pass
 
         def __call__(self, data):
-            from cryptography.hazmat.primitives import ciphers, hmac, hashes
-            import cryptography.exceptions
-
             # ensure minimum chunksize of 32 so we can easily read signature
             # iterate pairwise to detect last chunk and verify HMAC
             for enc, nextenc in utils.pairwise(utils.minimum_chunksize(data)):
@@ -180,7 +172,6 @@ class aes_spake(object):
         def __init__(self, str_key):
             super(aes_spake.encrypt, self).__init__(str_key)
             utils.logger.debug(_("Initializing AES SPAKE2 encryptor"))
-            from spake2 import SPAKE2_B
 
             self.exchange = SPAKE2_B(str_key.encode())
             self.str_key = None
@@ -189,8 +180,6 @@ class aes_spake(object):
             return self.exchange.start()
 
         def finish(self, msg):
-            from spake2 import SPAKEError
-
             try:
                 self.str_key = self.exchange.finish(msg)
                 utils.logger.debug(
@@ -213,7 +202,6 @@ class aes_spake(object):
         def __init__(self, str_key):
             super(aes_spake.decrypt, self).__init__(str_key)
             utils.logger.debug(_("Initializing AES SPAKE2 decryptor"))
-            from spake2 import SPAKE2_A
 
             self.exchange = SPAKE2_A(str_key.encode())
             self.str_key = None
@@ -222,7 +210,6 @@ class aes_spake(object):
             return self.exchange.start()
 
         def finish(self, msg):
-            from spake2 import SPAKEError
 
             try:
                 self.str_key = self.exchange.finish(msg)

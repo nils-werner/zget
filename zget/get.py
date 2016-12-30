@@ -103,12 +103,7 @@ def cli(inargs=None):
         )
 
     if not args.bypass_encryption:
-        try:
-            ciphersuite = crypto.aes_spake.decrypt(args.password)
-        except ImportError:
-            raise ImportError(_(
-                "Could not load cipher suite. Did you install cryptography?"
-            ))
+        ciphersuite = crypto.aes_spake.decrypt(args.password)
     else:
         utils.logger.warn(
             _("WARNING: Encryption and authentication DISABLED!")
