@@ -197,7 +197,7 @@ def urlretrieve(
     if output is None:
         try:
             filename = re.findall(
-                "filename=(\S+)", r.headers['content-disposition']
+                "filename=(.+)", r.headers['content-disposition']
             )[0].strip('\'"')
         except (IndexError, KeyError):
             filename = urlparse.unquote(
