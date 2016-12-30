@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version:  \n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2016-12-29 19:30+0100\n"
+"POT-Creation-Date: 2016-12-30 13:42+0100\n"
 "PO-Revision-Date: 2015-12-24 13:00+0100\n"
 "Last-Translator: \n"
 "Language: de_DE\n"
@@ -62,17 +62,25 @@ msgstr ""
 "Laden Sie eine Datei mittels `zput %(f)s` oder `zput <filename> %(f)s` "
 "hoch"
 
-#: zget/get.py:151
+#: zget/get.py:114 zget/put.py:183
+msgid ""
+"An Error occurred. For a full traceback try running zget again with "
+"enabled verbosity (-vvv)."
+msgstr ""
+"Ein Fehler ist aufgetreten. Versuchen sie, für eine vollständige Meldung,"
+" zget im Debug Modus (-vvv) auszuführen."
+
+#: zget/get.py:155
 #, python-format
 msgid "Looking for %s._zget._http._tcp.local."
 msgstr "Suche nach %s._zget._http._tcp.local."
 
-#: zget/get.py:167
+#: zget/get.py:171
 #, python-format
 msgid "Downloading from %(a)s:%(p)d"
 msgstr "Lade herunter von %(a)s:%(p)d"
 
-#: zget/get.py:179 zget/put.py:294
+#: zget/get.py:183 zget/put.py:298
 msgid "Done."
 msgstr "Fertig."
 
@@ -135,17 +143,17 @@ msgstr "Sie können lediglich --address oder --interface setzen, aber nicht beid
 msgid "Download this file using `zget %(f)s` or `zget %(o)s`"
 msgstr "Laden Sie diese Datei mittels `zget %(f)s` oder `zget %(o)s` herunter"
 
-#: zget/put.py:230
+#: zget/put.py:234
 #, python-format
 msgid "Port %d exceeds allowed range"
 msgstr "Port %d liegt oberhalb des erlaubten Wertebereich"
 
-#: zget/put.py:256
+#: zget/put.py:260
 #, python-format
 msgid "Using interface %s"
 msgstr "Benutze Interface %s"
 
-#: zget/put.py:260
+#: zget/put.py:264
 #, python-format
 msgid ""
 "Listening on %(a)s:%(p)d \n"
@@ -154,7 +162,7 @@ msgstr ""
 "Horche auf %(a)s:%(p)d \n"
 "Sie können Addresse mittels --address und Port mittels --port verändern"
 
-#: zget/put.py:270
+#: zget/put.py:274
 #, python-format
 msgid "Broadcasting as %s._zget._http._tcp.local."
 msgstr "Sende als %s._zget._http._tcp.local."
@@ -163,7 +171,7 @@ msgstr "Sende als %s._zget._http._tcp.local."
 msgid "Timeout."
 msgstr "Zeitüberschreitung."
 
-#: zget/utils.py:161
+#: zget/utils.py:162
 msgid "You have selected an invalid interface"
 msgstr "Sie haben ein ungültiges Interface gewählt."
 

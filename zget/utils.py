@@ -29,7 +29,8 @@ __version__ = "0.11.1"
 class TimeoutException(Exception):
     """ Exception raised when a timeout was hit.
     """
-    message = _("Timeout.")
+    def __init__(self, msg=_("Timeout.")):
+        super(TimeoutException, self).__init__(msg)
 
 
 class Progresshook(object):

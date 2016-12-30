@@ -178,7 +178,11 @@ def cli(inargs=None):
     except Exception as e:
         if args.verbose:
             raise
-        utils.logger.error(str(e))
+        utils.logger.error(unicode(e))
+        utils.logger.error(
+            _("An Error occurred. For a full traceback try running zget "
+              "again with enabled verbosity (-vvv).")
+        )
         sys.exit(1)
 
 
