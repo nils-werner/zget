@@ -78,6 +78,7 @@ environment:
       PYTHON_ARCH: "64"
 
 install:
+  - "choco install md5"
   - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
   - "python --version"
   - "python -c \"import struct; print(struct.calcsize('P') * 8)\""
