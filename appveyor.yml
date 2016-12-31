@@ -86,6 +86,7 @@ install:
 
 build_script:
   - "pip install -e .[tests,docs]"
+  - "python setup.py compile_catalog"
 
 test_script:
   - "py.test"
