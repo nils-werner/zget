@@ -34,15 +34,15 @@ zget works both ways:
 
 ### Sharing
 
-To share some pictures do:
+Alice wants to share some pictures:
 
     $ zput my_holiday_pictures.zip
 
-then shout
+then shouts
 
-> Hey Tom, I am sending you my_holiday_pictures.zip!
+> Hey Bob, I am sending you my_holiday_pictures.zip!
 
-Tom will then do
+Bob will then do
 
     $ zget my_holiday_pictures.zip
 
@@ -51,15 +51,15 @@ Done.
 
 ### Receiving
 
-You want to have some very important data from Tom:
+If Bob wants to have some very important data from Alice:
 
     $ zget annual_reports.xlsx
 
-then shout
+then shouts
 
-> Hey Tom, can you send me annual_reports.xlsx?
+> Hey Alice, can you send me annual_reports.xlsx?
 
-Tom then does
+Alice then does
 
     $ zput annual_reports.xlsx
 
@@ -145,5 +145,11 @@ SHA-1 hash on the network. This means that a malicious party could trivially
 intercept your transfers by simply generating a large enough number of hashes
 and then accepting the transfer on behalf of the desired recipient.
 
-In this case you should however notice the attack by the recipient never
-receiving a file while the sender sees an upload happening.
+However, as of version 0.12 `zput` uses a symmetric cipher (AES-CTR),
+message authentication (HMAC-SHA256) and a password based, forward secure key
+exchange (SPAKE2). In addition to providing the file for transfer, you will be
+asked for a password, which you must privately share with the recipient.
+
+Additionally, after transfer `zget` prints out a `HMAC signature`. If the
+values at the sender and the recipient match, you know that no third party
+managed to interfere with your connections.
