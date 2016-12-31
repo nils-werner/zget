@@ -199,7 +199,10 @@ def urlretrieve(
     r = requests.get(
         url, stream=True,
         headers={
-            'key-exchange-a': base64.urlsafe_b64encode(ciphersuite.start())
+            'zget-ciphersuite': ciphersuite.name(),
+            'zget-key-exchange-message': base64.urlsafe_b64encode(
+                ciphersuite.start()
+            )
         }
     )
     try:
@@ -209,7 +212,7 @@ def urlretrieve(
 
     try:
         ciphersuite.finish(
-            base64.urlsafe_b64decode(r.headers['key-exchange-b'])
+            base64.urlsafe_b64decode(r.headers['zget-key-exchange-message'])
         )
     except KeyError:
         pass

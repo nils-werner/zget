@@ -50,6 +50,9 @@ class aes(object):
             self.str_key = str_key.encode()
             self.iv_sent = False
 
+        def name(self):
+            return "aes-ctr-hmac-sha256"
+
         def start(self):
             return b""
 
@@ -117,6 +120,9 @@ class aes(object):
             self.cipher = None
             self.cryptor = None
             self.str_key = str_key.encode()
+
+        def name(self):
+            return "aes-ctr-hmac-sha256"
 
         def start(self):
             return b""
@@ -192,6 +198,9 @@ class aes_spake(object):
             self.exchange = SPAKE2_B(str_key.encode())
             self.str_key = None
 
+        def name(self):
+            return "aes-ctr-hmac-sha256-spake2"
+
         def start(self):
             return self.exchange.start()
 
@@ -221,6 +230,9 @@ class aes_spake(object):
 
             self.exchange = SPAKE2_A(str_key.encode())
             self.str_key = None
+
+        def name(self):
+            return "aes-ctr-hmac-sha256-spake2"
 
         def start(self):
             return self.exchange.start()
@@ -252,6 +264,9 @@ class bypass(object):
     class encrypt(object):
         def __init__(self, key=""):
             utils.logger.debug(_("Initializing bypass cryptor"))
+
+        def name(self):
+            return "bypass"
 
         def start(self):
             return b""

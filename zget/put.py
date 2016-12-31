@@ -60,9 +60,9 @@ class FileHandler(BaseHTTPRequestHandler):
                 self.server.ciphersuite.start()
             )
             try:
-                self.server.ciphersuite.finish(
-                    base64.urlsafe_b64decode(self.headers['key-exchange-a'])
-                )
+                self.server.ciphersuite.finish(base64.urlsafe_b64decode(
+                    self.headers['zget-key-exchange-message']
+                ))
             except KeyError:
                 pass
 
@@ -72,7 +72,14 @@ class FileHandler(BaseHTTPRequestHandler):
                 maxsize = os.path.getsize(full_path)
                 self.send_response(200)
                 self.send_header('Content-type', 'application/octet-stream')
-                self.send_header('key-exchange-b', key_b.decode("ascii"))
+                self.send_header(
+                    'zget-ciphersuite',
+                    self.server.ciphersuite.name()
+                )
+                self.send_header(
+                    'zget-key-exchange-message',
+                    key_b.decode("ascii")
+                )
                 self.send_header(
                     'Content-disposition',
                     'inline; filename="%s"' % os.path.basename(
