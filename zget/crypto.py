@@ -32,7 +32,7 @@ def password_derive(key, salt):
 
 
 def truncate_digest(digest, length=7):
-    return binascii.hexlify(digest)[:7]
+    return binascii.hexlify(digest).decode("ascii")[:length]
 
 
 class aes(object):
