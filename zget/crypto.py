@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, print_function, \
 import itertools
 import base64
 import os
+import binascii
 from . import utils
 from .utils import _
 
@@ -28,6 +29,10 @@ def password_derive(key, salt):
         backend=backends.default_backend()
     )
     return base64.urlsafe_b64encode(kdf.derive(key))
+
+
+def truncate_digest(digest, length=7):
+    return binascii.hexlify(digest)[:7]
 
 
 class aes(object):
@@ -90,6 +95,11 @@ class aes(object):
 
             utils.logger.debug(_("Sending HMAC signature"))
             signature = self.h.finalize()
+            utils.logger.critical(
+                _("HMAC signature: %s") % truncate_digest(
+                    signature
+                )
+            )
             yield signature
 
         def size(self, x):
@@ -149,8 +159,14 @@ class aes(object):
                     utils.logger.debug(_("Received HMAC signature"))
                     self.h.update(enc)
                     try:
+                        h2 = self.h.copy()
                         self.h.verify(signature)
                         utils.logger.debug(_("HMAC verification OK"))
+                        utils.logger.critical(
+                            _("HMAC signature: %s") % truncate_digest(
+                                h2.finalize()
+                            )
+                        )
                     except cryptography.exceptions.InvalidSignature:
                         raise RuntimeError(
                             _("File decryption and verification failed. Did "
