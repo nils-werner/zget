@@ -22,6 +22,11 @@ import argparse
 __all__ = ["put"]
 
 
+class InvalidRequest(Exception):
+    def __init__(self, msg=_("Invalid request received. Aborting.")):
+        super(self.__class__, self).__init__(msg)
+
+
 def validate_address(address):
     """ Validate IP address
     """
@@ -63,6 +68,8 @@ class FileHandler(BaseHTTPRequestHandler):
                 self.server.ciphersuite.finish(base64.urlsafe_b64decode(
                     self.headers['zget-key-exchange-message']
                 ))
+                if self.headers['zget-ciphersuite'] != self.server.ciphersuite.name():
+                    raise crypto.IncompatibleCrypto()
             except KeyError:
                 pass
 
@@ -103,7 +110,7 @@ class FileHandler(BaseHTTPRequestHandler):
         else:
             self.send_response(404)
             self.end_headers()
-            raise RuntimeError(_("Invalid request received. Aborting."))
+            raise InvalidRequest()
 
     def log_message(self, format, *args):
         """
@@ -193,7 +200,8 @@ def cli(inargs=None):
 
     try:
         if not os.path.isfile(args.input):
-            raise ValueError(
+            raise IOError(
+                2,
                 _("File %s does not exist") % args.input
             )
         if args.interface and args.address:
@@ -267,7 +275,7 @@ def put(
 
     Raises
     -------
-    TimeoutException
+    Timeout
         When a timeout occurred.
 
     """
@@ -344,7 +352,7 @@ def put(
     zeroconf.close()
 
     if timeout is not None and not server.downloaded:
-        raise utils.TimeoutException()
+        raise utils.Timeout()
     else:
         utils.logger.info(_("Done."))
 

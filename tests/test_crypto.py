@@ -93,7 +93,7 @@ def test_corruption(size, payload):
     tmpfile.write(b"garbage")
     tmpfile.seek(0)
 
-    with pytest.raises(RuntimeError):
+    with pytest.raises(crypto.InvalidSignature):
         for data in decipher(utils.iter_content(tmpfile)):
             outfile.write(data)
 

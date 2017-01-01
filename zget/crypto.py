@@ -13,12 +13,6 @@ from cryptography.hazmat import backends
 import cryptography.exceptions
 from spake2 import SPAKEError, SPAKE2_A, SPAKE2_B
 
-outdated_msg = " " + _(
-    "Maybe the other end is "
-    "not using encryption or is running an outdated version "
-    "of zget?"
-)
-
 
 def password_derive(key, salt):
     kdf = pbkdf2.PBKDF2HMAC(
@@ -174,10 +168,7 @@ class aes(object):
                             )
                         )
                     except cryptography.exceptions.InvalidSignature:
-                        raise RuntimeError(
-                            _("File decryption and verification failed. Did "
-                              "you supply the correct password?")
-                            )
+                        raise InvalidSignature()
                 else:
                     self.h.update(enc)
 
@@ -211,14 +202,11 @@ class aes_spake(object):
                     _("SPAKE2 Key Exchange finished")
                 )
             except SPAKEError:
-                raise ValueError(_("The key exchange failed.") + outdated_msg)
+                raise KeyExchangeFailed()
 
         def __call__(self, data):
             if self.str_key is None:
-                raise RuntimeError(
-                    _("Password key exchange did not finish before starting "
-                      "the transfer.") + outdated_msg
-                )
+                raise KeyExchangeNotFinished()
 
             for x in super(aes_spake.encrypt, self).__call__(data):
                 yield x
@@ -245,16 +233,11 @@ class aes_spake(object):
                     _("SPAKE2 Key Exchange finished")
                 )
             except SPAKEError:
-                raise ValueError(
-                    _("The key exchange failed.") + outdated_msg
-                )
+                raise KeyExchangeFailed()
 
         def __call__(self, data):
             if self.str_key is None:
-                raise RuntimeError(
-                    _("Password key exchange did not finish before starting "
-                      "the transfer.") + outdated_msg
-                )
+                raise KeyExchangeNotFinished()
 
             for x in super(aes_spake.decrypt, self).__call__(data):
                 yield x
@@ -282,3 +265,38 @@ class bypass(object):
             return x
 
     decrypt = encrypt
+
+
+class IncompatibleCrypto(Exception):
+    def __init__(
+        self,
+        msg=_("The remote end is using an incompatible cryptography "
+              "algorithm.") + utils.outdated_msg
+    ):
+        super(self.__class__, self).__init__(msg)
+
+
+class InvalidSignature(Exception):
+    def __init__(
+        self,
+        msg=_("File decryption and verification failed. Did "
+              "you supply the correct password?")
+    ):
+        super(self.__class__, self).__init__(msg)
+
+
+class KeyExchangeFailed(Exception):
+    def __init__(
+        self,
+        msg=_("The key exchange failed.") + utils.outdated_msg
+    ):
+        super(self.__class__, self).__init__(msg)
+
+
+class KeyExchangeNotFinished(Exception):
+    def __init__(
+        self,
+        msg=_("Password key exchange did not finish before starting "
+              "the transfer.") + utils.outdated_msg
+    ):
+        super(self.__class__, self).__init__(msg)

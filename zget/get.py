@@ -172,7 +172,7 @@ def get(
 
     Raises
     -------
-    TimeoutException
+    Timeout
         When a timeout occurred.
 
     """
@@ -199,7 +199,7 @@ def get(
                 time.time() - start_time > timeout
             ):
                 zeroconf.close()
-                raise utils.TimeoutException()
+                raise utils.Timeout()
 
         utils.logger.debug(
             _("Downloading from %(a)s:%(p)d") %

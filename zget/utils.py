@@ -28,11 +28,19 @@ logger = logging.getLogger('zget')
 __version__ = "0.11.1"
 
 
-class TimeoutException(Exception):
-    """ Exception raised when a timeout was hit.
-    """
+outdated_msg = " " + _(
+    "Try upgrading zget to the latest version."
+)
+
+
+class Timeout(Exception):
     def __init__(self, msg=_("Timeout.")):
-        super(TimeoutException, self).__init__(msg)
+        super(self.__class__, self).__init__(msg)
+
+
+class InvalidInterface(Exception):
+    def __init__(self, msg=_("You have selected an invalid interface")):
+        super(self.__class__, self).__init__(msg)
 
 
 class Progresshook(object):
@@ -161,7 +169,7 @@ def ip_addr(interface):
     try:
         return netifaces.ifaddresses(interface)[netifaces.AF_INET][0]['addr']
     except KeyError:
-        raise ValueError(_("You have selected an invalid interface"))
+        raise InvalidInterface()
 
 
 def unique_filename(filename, limit=999):
@@ -214,6 +222,8 @@ def urlretrieve(
         ciphersuite.finish(
             base64.urlsafe_b64decode(r.headers['zget-key-exchange-message'])
         )
+        if r.headers['zget-ciphersuite'] != ciphersuite.name():
+            raise crypto.IncompatibleCrypto()
     except KeyError:
         pass
 

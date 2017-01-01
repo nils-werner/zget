@@ -1,5 +1,6 @@
 import os
 import zget
+import zget.utils
 import pytest
 
 
@@ -9,10 +10,10 @@ def test_version_installed():
 
 
 def test_raises_timeout():
-    with pytest.raises(zget.TimeoutException):
+    with pytest.raises(zget.utils.Timeout):
         zget.get("as", "", timeout=1)
 
-    with pytest.raises(zget.TimeoutException):
+    with pytest.raises(zget.utils.Timeout):
         zget.put("asd", timeout=1)
 
 

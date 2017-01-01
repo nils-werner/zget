@@ -7,7 +7,8 @@ Module contents
 .. autosummary::
     zget.get
     zget.put
-    zget.TimeoutException
+    zget.crypto
+    zget.utils
 
 
 Module reference
