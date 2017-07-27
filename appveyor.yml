@@ -58,6 +58,14 @@ environment:
       PYTHON_VERSION: "3.5.0"
       PYTHON_ARCH: "64"
 
+    - PYTHON: "C:\\Python36"
+      PYTHON_VERSION: "3.6.0"
+      PYTHON_ARCH: "32"
+
+    - PYTHON: "C:\\Python36-x64"
+      PYTHON_VERSION: "3.6.0"
+      PYTHON_ARCH: "64"
+
     # Major and minor releases (i.e x.0.0 and x.y.0) prior to 3.3.0 use
     # a different naming scheme.
 
