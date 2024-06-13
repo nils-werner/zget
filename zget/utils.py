@@ -102,7 +102,7 @@ class Progresshook(object):
 def config():
     """ Reads config values from zget.cfg or zget.ini
     """
-    config = configparser.SafeConfigParser(
+    config = configparser.ConfigParser(
         defaults={
             'port': '0',
             'interface': None,
